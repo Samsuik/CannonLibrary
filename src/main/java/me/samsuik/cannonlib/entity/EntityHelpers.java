@@ -1,0 +1,57 @@
+package me.samsuik.cannonlib.entity;
+
+import me.samsuik.cannonlib.World;
+import me.samsuik.cannonlib.component.Component;
+import me.samsuik.cannonlib.entity.helpers.CannonRatio;
+import me.samsuik.cannonlib.entity.helpers.MultiTnt;
+import me.samsuik.cannonlib.physics.vec3.Vec3d;
+
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+
+public final class EntityHelpers {
+    public static Entity createFromCannonDebugString(
+            final String positionString,
+            final String momentumString,
+            final List<Component<Entity>> components
+    ) {
+        return createFromCannonDebugString(positionString + " " + momentumString, components);
+    }
+
+    public static Entity createFromCannonDebugString(final String debugString, final List<Component<Entity>> components) {
+        final Entity entity = new Entity();
+        entity.position = vec3dFromDebugString(debugString, 0);
+        entity.momentum = vec3dFromDebugString(debugString, 3);
+        components.forEach(entity::addComponent);
+        return entity;
+    }
+
+    private static Vec3d vec3dFromDebugString(final String debugString, final int in) {
+        final String[] parts = debugString.split(" ");
+        final double x = Double.parseDouble(parts[in]);
+        final double y = Double.parseDouble(parts[in+1]);
+        final double z = Double.parseDouble(parts[in+2]);
+        return new Vec3d(x, y, z);
+    }
+
+    public static Entity createFromMultiString(
+            final String multiString,
+            final Consumer<Entity> entityConsumer,
+            final List<Component<Entity>> components
+    ) {
+        return MultiTnt.createFromMultiString(multiString, entityConsumer, components);
+    }
+
+    public static void loadRatioIntoWorld(
+            final String ratioString,
+            final World world,
+            final Vec3d position,
+            final boolean useGameTicks,
+            final int explosionFlags,
+            final Map<String, Vec3d> offsets,
+            final List<Component<Entity>> extraComponents
+    ) {
+        CannonRatio.loadRatioIntoWorld(ratioString, world, position, useGameTicks, explosionFlags, offsets, extraComponents);
+    }
+}
