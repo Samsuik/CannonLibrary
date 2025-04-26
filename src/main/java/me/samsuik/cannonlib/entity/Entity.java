@@ -9,12 +9,10 @@ import me.samsuik.cannonlib.entity.data.KeyedDataStorage;
 import me.samsuik.cannonlib.entity.data.KeyedDataStorageHolder;
 import me.samsuik.cannonlib.physics.Rotation;
 import me.samsuik.cannonlib.physics.shape.AABB;
-import me.samsuik.cannonlib.physics.shape.Shape;
 import me.samsuik.cannonlib.physics.shape.Shapes;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
 import me.samsuik.cannonlib.physics.vec3.Vec3i;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -36,7 +34,6 @@ public final class Entity implements ComponentsHolder<Entity>, KeyedDataStorageH
 
     private final Components<Entity> components = new Components<>();
     private final KeyedDataStorage dataStorage = new KeyedDataStorage();
-    public final List<Shape> collisions = new ArrayList<>();
     private World world = null;
     public Vec3d position = Vec3d.zero();
     public Vec3d momentum = Vec3d.zero();
@@ -112,7 +109,6 @@ public final class Entity implements ComponentsHolder<Entity>, KeyedDataStorageH
         entity.putData(DataKeys.COPY, true);
 //        entity.dataStorage.copyFrom(this.dataStorage);
         entity.components.copyComponentsFrom(this.components);
-        entity.collisions.addAll(this.collisions);
         entity.position = this.position;
         entity.momentum = this.momentum;
         entity.entityState = this.entityState;
