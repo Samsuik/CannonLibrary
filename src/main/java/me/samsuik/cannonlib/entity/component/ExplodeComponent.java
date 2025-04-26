@@ -3,6 +3,7 @@ package me.samsuik.cannonlib.entity.component;
 import me.samsuik.cannonlib.World;
 import me.samsuik.cannonlib.component.Component;
 import me.samsuik.cannonlib.entity.Entity;
+import me.samsuik.cannonlib.entity.data.DataKeys;
 import me.samsuik.cannonlib.explosion.Explosion;
 import me.samsuik.cannonlib.explosion.ExplosionFlags;
 import me.samsuik.cannonlib.explosion.Obstruction;
@@ -34,7 +35,7 @@ public final class ExplodeComponent implements Component<Entity> {
         for (int count = this.amount - 1; count >= 0; --count) {
             final Set<Vec3i> blocksToExplode = Explosion.explode(entity, obstruction, this.amount - count, flags);
 
-            if (count != 0) {
+            if (count != 0 || entity.getData(DataKeys.REPEAT)) {
                 // Handle swinging
                 final Vec3d entityPosition = entity.getEntityState().position();
                 final Vec3d explosionPosition = Explosion.explosionPosition(entity.position);
@@ -57,6 +58,7 @@ public final class ExplodeComponent implements Component<Entity> {
             }
         }
 
+        entity.putData(DataKeys.EXPLODED, true);
         entity.removeCurrentComponent();
         entity.remove();
     }

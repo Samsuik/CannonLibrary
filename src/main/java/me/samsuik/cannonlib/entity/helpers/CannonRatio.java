@@ -119,7 +119,7 @@ public final class CannonRatio {
         public Entity createEntity(final boolean useGameTicks, final int explosionFlags, final List<Component<Entity>> extraComponents) {
             final List<Component<Entity>> components = new ArrayList<>();
             components.add(Component.<Entity>user(entity
-                            -> entity.putData(DataKeys.CANNON_RATIO_DATA_KEY, RatioEntityData.this))
+                            -> entity.putData(DataKeys.NAME, this.name))
                     .atTick(0)
             );
             components.add(EntityComponents.ENTITY_TICK_WITH_COLLISION
@@ -131,7 +131,7 @@ public final class CannonRatio {
             components.addAll(extraComponents);
 
             if (this.sand()) {
-                final boolean restack = RESTACK_PATTERN.matcher(name).find();
+                final boolean restack = RESTACK_PATTERN.matcher(this.name).find();
                 final Block fallingBlock = restack ? Blocks.GRAVEL : Blocks.SAND;
                 components.add(EntityComponents.fallingBlock(fallingBlock, this.amount()));
             } else {

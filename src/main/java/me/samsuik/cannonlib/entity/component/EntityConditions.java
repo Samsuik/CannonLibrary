@@ -4,6 +4,7 @@ import me.samsuik.cannonlib.World;
 import me.samsuik.cannonlib.block.Block;
 import me.samsuik.cannonlib.block.Blocks;
 import me.samsuik.cannonlib.entity.Entity;
+import me.samsuik.cannonlib.entity.data.DataKeys;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
 import me.samsuik.cannonlib.physics.vec3.Vec3i;
 
@@ -26,6 +27,9 @@ public final class EntityConditions {
     public static final Predicate<Entity> IS_ON_GROUND = entity -> entity.onGround;
     public static final Predicate<Entity> IS_ALIVE = entity -> !entity.shouldRemove();
     public static final Predicate<Entity> HAS_MOMENTUM = entity -> entity.momentum.magnitudeSquared() > 0.0;
+    public static final Predicate<Entity> HAS_STACKED = entity -> entity.getDataOrDefault(DataKeys.STACKED, true);
+    public static final Predicate<Entity> HAS_EXPLODED = entity -> entity.getDataOrDefault(DataKeys.EXPLODED, false);
+
     public static final Predicate<Entity> CAN_STACK = entity -> {
         if (!entity.onGround) {
             return false;
@@ -45,7 +49,11 @@ public final class EntityConditions {
     };
 
     public static Predicate<Entity> clipY(final double y, final double margin) {
-        return entity -> entity.position.getY() >= y - margin;
+        return above(y - margin);
+    }
+
+    public static Predicate<Entity> above(final double y) {
+        return entity -> entity.position.getY() >= y;
     }
 
     public static Predicate<Entity> hasEntityMoved(final Vec3d position) {

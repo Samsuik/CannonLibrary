@@ -49,6 +49,7 @@ public final class FallingBlockComponent implements Component<Entity> {
             }
         }
 
+        entity.putData(DataKeys.STACKED, true);
         entity.removeCurrentComponent();
         entity.remove();
     }
