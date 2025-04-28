@@ -9,6 +9,18 @@ public record Vec3i(int x, int y, int z) implements Vec3<Vec3i> {
         return new Vec3i(n, n, n);
     }
 
+    public Vec3i setX(final int newX) {
+        return new Vec3i(newX, this.y, this.z);
+    }
+
+    public Vec3i setY(final int newY) {
+        return new Vec3i(this.x, newY, this.z);
+    }
+
+    public Vec3i setZ(final int newZ) {
+        return new Vec3i(this.x, this.y, newZ);
+    }
+
     @Override
     public Vec3i add(final Vec3i vec) {
         return this.add(vec.x, vec.y, vec.z);

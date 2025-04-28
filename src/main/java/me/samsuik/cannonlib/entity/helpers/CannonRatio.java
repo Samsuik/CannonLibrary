@@ -1,13 +1,13 @@
 package me.samsuik.cannonlib.entity.helpers;
 
-import me.samsuik.cannonlib.World;
+import me.samsuik.cannonlib.world.World;
 import me.samsuik.cannonlib.block.Block;
 import me.samsuik.cannonlib.block.Blocks;
 import me.samsuik.cannonlib.component.Component;
 import me.samsuik.cannonlib.entity.Entity;
 import me.samsuik.cannonlib.entity.component.EntityComponents;
 import me.samsuik.cannonlib.entity.component.EntityConditions;
-import me.samsuik.cannonlib.entity.data.DataKeys;
+import me.samsuik.cannonlib.entity.EntityDataKeys;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,11 +115,11 @@ public final class CannonRatio {
         return new RatioEntityData(name, offsetPos, tick, amount, isPower, isSand);
     }
 
-    public record RatioEntityData(String name, Vec3d position, double tick, int amount, boolean power, boolean sand) {
+    private record RatioEntityData(String name, Vec3d position, double tick, int amount, boolean power, boolean sand) {
         public Entity createEntity(final boolean useGameTicks, final int explosionFlags, final List<Component<Entity>> extraComponents) {
             final List<Component<Entity>> components = new ArrayList<>();
             components.add(Component.<Entity>user(entity
-                            -> entity.putData(DataKeys.NAME, this.name))
+                            -> entity.putData(EntityDataKeys.NAME, this.name))
                     .atTick(0)
             );
             components.add(EntityComponents.ENTITY_TICK_WITH_COLLISION

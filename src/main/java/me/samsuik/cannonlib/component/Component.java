@@ -1,7 +1,7 @@
 package me.samsuik.cannonlib.component;
 
-import me.samsuik.cannonlib.entity.data.DataKeys;
-import me.samsuik.cannonlib.entity.data.KeyedDataStorageHolder;
+import me.samsuik.cannonlib.entity.EntityDataKeys;
+import me.samsuik.cannonlib.data.KeyedDataStorageHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +120,7 @@ public interface Component<U extends ComponentsHolder<?>> {
             public boolean action0(final U user, final int tick) {
                 boolean nested = false;
                 if (user instanceof KeyedDataStorageHolder holder) {
-                    nested = holder.putData(DataKeys.REPEAT, true);
+                    nested = holder.putData(EntityDataKeys.REPEAT, true);
                 }
 
                 boolean success = true;
@@ -129,7 +129,7 @@ public interface Component<U extends ComponentsHolder<?>> {
                 }
 
                 if (!nested && user instanceof KeyedDataStorageHolder holder) {
-                    holder.removeData(DataKeys.REPEAT);
+                    holder.removeData(EntityDataKeys.REPEAT);
                 }
                 return success;
             }

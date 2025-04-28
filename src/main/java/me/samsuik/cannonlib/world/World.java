@@ -1,48 +1,43 @@
-package me.samsuik.cannonlib;
+package me.samsuik.cannonlib.world;
 
 import me.samsuik.cannonlib.block.Block;
+import me.samsuik.cannonlib.component.Components;
+import me.samsuik.cannonlib.component.ComponentsHolder;
 import me.samsuik.cannonlib.entity.Entity;
 import me.samsuik.cannonlib.physics.shape.Shape;
 import me.samsuik.cannonlib.physics.shape.Shapes;
 import me.samsuik.cannonlib.physics.vec3.Vec3i;
-import me.samsuik.cannonlib.scenario.Scenario;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-public final class World {
-    // todo: We only need to do a COW if the entity list is being changed while ticking
-    private final List<Entity> entityList = new CopyOnWriteArrayList<>();
+public final class World implements ComponentsHolder<World> {
+    private final Components<World> components = new Components<>();
+    private final EntityList entityList = new EntityList();
     private final List<Shape> globalCollisions = new ArrayList<>();
-    // todo: Move this into a tree
+    // todo: tree
     private final Map<Vec3i, Block> blocks = new HashMap<>();
     private final Map<Vec3i, Shape> blockShapes = new HashMap<>();
     private final List<Shape> blockCollisions = new ArrayList<>();
+
+    public boolean hasEntities() {
+        return !this.entityList.isEmpty();
+    }
+
+    public void tick() {
+        this.entityList.setTicking(true);
+        for (final Entity entity : this.entityList) {
+            if (!entity.shouldRemove()) {
+                entity.tick();
+            }
+        }
+        this.entityList.setTicking(false);
+        this.entityList.removeIf(Entity::shouldRemove);
+    }
 
     public void keepTicking() {
         while (this.hasEntities()) {
             this.tick();
         }
-    }
-
-    public void tick() {
-        final List<Entity> toRemove = new ArrayList<>(0);
-        for (final Entity entity : this.entityList) {
-            if (entity.shouldRemove()) {
-                toRemove.add(entity);
-            } else {
-                entity.tick();
-            }
-        }
-        toRemove.reversed().forEach(this::removeEntity);
-    }
-
-    public boolean testScenario(final Scenario scenario) {
-        return scenario.test(this);
-    }
-
-    public boolean hasEntities() {
-        return !this.entityList.isEmpty();
     }
 
     public void addEntity(final Entity entity) {
@@ -56,20 +51,15 @@ public final class World {
     }
 
     public List<Entity> cloneEntity(final Entity entity, final int amount) {
-        assert entity.getWorld() == this;
+        assert entity.getWorld() == this : "entity must be a member of this world";
         final List<Entity> clonedEntities = new ArrayList<>(amount);
         for (int count = 0; count < amount; ++count) {
             final Entity entityCopy = entity.copy();
             entityCopy.setWorld(this);
             clonedEntities.add(entityCopy);
         }
-        final int index = this.entityList.indexOf(entity);
-        this.entityList.addAll(index, clonedEntities);
+        this.entityList.addAllAfter(entity, clonedEntities);
         return clonedEntities;
-    }
-
-    public List<Entity> getEntityList() {
-        return Collections.unmodifiableList(this.entityList);
     }
 
     public Block getBlockAt(final Vec3i position) {
@@ -112,14 +102,6 @@ public final class World {
         this.blockCollisions.clear();
     }
 
-    public Map<Vec3i, Block> getBlocks() {
-        return Collections.unmodifiableMap(this.blocks);
-    }
-
-    public List<Shape> getBlockCollisions() {
-        return Collections.unmodifiableList(this.blockCollisions);
-    }
-
     public void addGlobalCollision(final Shape collision) {
         this.globalCollisions.add(collision);
     }
@@ -128,8 +110,21 @@ public final class World {
         this.globalCollisions.remove(collision);
     }
 
-    public List<Shape> getGlobalCollisions() {
-        return Collections.unmodifiableList(this.globalCollisions);
+    public Collection<Entity> getEntityList() {
+        return this.entityList;
+    }
+
+    public Map<Vec3i, Block> getBlocks() {
+        return Collections.unmodifiableMap(this.blocks);
+    }
+    
+    public Collisions getCollisions() {
+        return new Collisions(this.globalCollisions, this.blockCollisions);
+    }
+
+    @Override
+    public Components<World> getComponents() {
+        return this.components;
     }
 
     public World snapshot() {

@@ -1,6 +1,6 @@
 package me.samsuik.cannonlib.explosion;
 
-import me.samsuik.cannonlib.World;
+import me.samsuik.cannonlib.world.World;
 import me.samsuik.cannonlib.block.Block;
 import me.samsuik.cannonlib.physics.shape.AABB;
 import me.samsuik.cannonlib.physics.shape.Shapes;

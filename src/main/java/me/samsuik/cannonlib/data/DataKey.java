@@ -1,4 +1,4 @@
-package me.samsuik.cannonlib.entity.data;
+package me.samsuik.cannonlib.data;
 
 @SuppressWarnings("unused")
 public record DataKey<T>(String key) {

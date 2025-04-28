@@ -1,6 +1,6 @@
 package me.samsuik.cannonlib.entity.component;
 
-import me.samsuik.cannonlib.World;
+import me.samsuik.cannonlib.world.World;
 import me.samsuik.cannonlib.component.Component;
 import me.samsuik.cannonlib.entity.Entity;
 

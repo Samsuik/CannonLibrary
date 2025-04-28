@@ -3,9 +3,9 @@ package me.samsuik.cannonlib.block;
 import me.samsuik.cannonlib.physics.Rotation;
 import me.samsuik.cannonlib.physics.shape.BlockShape;
 
-public record Block(BlockShape shape, float blastResistance, boolean replace) {
-    public Block(BlockShape shape, float blastResistance) {
-        this(shape, blastResistance, false);
+public record Block(String name, BlockShape shape, float blastResistance, boolean replace) {
+    public Block(String name, BlockShape shape, float blastResistance) {
+        this(name, shape, blastResistance, false);
     }
 
     public Block rotate(final Rotation... rotations) {
@@ -13,11 +13,11 @@ public record Block(BlockShape shape, float blastResistance, boolean replace) {
         for (final Rotation rotation : rotations) {
             rotatedShape = rotatedShape.rotate(rotation);
         }
-        return new Block(rotatedShape, this.blastResistance);
+        return new Block(this.name, rotatedShape, this.blastResistance);
     }
 
     public Block flip(final Rotation.RotationAxis axis) {
-        return new Block(this.shape.flip(axis), this.blastResistance);
+        return new Block(this.name, this.shape.flip(axis), this.blastResistance);
     }
 
     @Override

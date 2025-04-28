@@ -1,11 +1,11 @@
 package me.samsuik.cannonlib.entity.component;
 
-import me.samsuik.cannonlib.World;
+import me.samsuik.cannonlib.world.World;
 import me.samsuik.cannonlib.block.Block;
 import me.samsuik.cannonlib.block.Blocks;
 import me.samsuik.cannonlib.component.Component;
 import me.samsuik.cannonlib.entity.Entity;
-import me.samsuik.cannonlib.entity.data.DataKeys;
+import me.samsuik.cannonlib.entity.EntityDataKeys;
 import me.samsuik.cannonlib.physics.vec3.Vec3i;
 
 public final class FallingBlockComponent implements Component<Entity> {
@@ -25,7 +25,7 @@ public final class FallingBlockComponent implements Component<Entity> {
         }
 
         for (int count = 0; count < this.amount; ++count) {
-            if (count != 0 || entity.getData(DataKeys.REPEAT)) {
+            if (count != 0 || entity.getData(EntityDataKeys.REPEAT)) {
                 entity.getEntityState().apply(entity);
                 TICKING.set(true);
                 entity.tick();
@@ -49,7 +49,7 @@ public final class FallingBlockComponent implements Component<Entity> {
             }
         }
 
-        entity.putData(DataKeys.STACKED, true);
+        entity.putData(EntityDataKeys.STACKED, true);
         entity.removeCurrentComponent();
         entity.remove();
     }

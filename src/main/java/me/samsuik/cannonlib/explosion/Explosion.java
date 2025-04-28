@@ -1,13 +1,12 @@
 package me.samsuik.cannonlib.explosion;
 
-import me.samsuik.cannonlib.World;
+import me.samsuik.cannonlib.world.World;
 import me.samsuik.cannonlib.block.Block;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
 import me.samsuik.cannonlib.entity.Entity;
 import me.samsuik.cannonlib.physics.vec3.Vec3i;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -77,17 +76,18 @@ public final class Explosion {
         }
 
         // Affect entities
-        final List<Entity> entityList = world.getEntityList();
         final boolean upToCount = (flags & ExplosionFlags.ENTITIES_UP_TO_COUNT) != 0;
-        final int stopAt = upToCount ? (count * ExplosionFlags.readData(flags, 1)) + 1 : Integer.MAX_VALUE;
-        final int entities = Math.min(entityList.size(), stopAt);
-
+        final int limit = upToCount ? (count * ExplosionFlags.readData(flags, 1)) : Integer.MAX_VALUE;
         final boolean singleImpact = (flags & ExplosionFlags.SINGLE_IMPACT) != 0;
         Vec3d reuseImpact = null;
 
-        for (int index = 0; index < entities; index++) {
-            final Entity otherEntity = entityList.get(index);
+        int entityIndex = 0;
+        for (final Entity otherEntity : world.getEntityList()) {
             if (otherEntity != entity) {
+                if (entityIndex++ >= limit) {
+                    break;
+                }
+
                 final Vec3d position = otherEntity.position;
                 final Vec3d impact;
                 if (singleImpact && reuseImpact != null) {

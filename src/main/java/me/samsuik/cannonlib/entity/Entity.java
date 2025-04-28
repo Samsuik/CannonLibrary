@@ -1,12 +1,11 @@
 package me.samsuik.cannonlib.entity;
 
-import me.samsuik.cannonlib.World;
+import me.samsuik.cannonlib.world.World;
 import me.samsuik.cannonlib.component.Component;
 import me.samsuik.cannonlib.component.ComponentsHolder;
 import me.samsuik.cannonlib.component.Components;
-import me.samsuik.cannonlib.entity.data.DataKeys;
-import me.samsuik.cannonlib.entity.data.KeyedDataStorage;
-import me.samsuik.cannonlib.entity.data.KeyedDataStorageHolder;
+import me.samsuik.cannonlib.data.KeyedDataStorage;
+import me.samsuik.cannonlib.data.KeyedDataStorageHolder;
 import me.samsuik.cannonlib.physics.Rotation;
 import me.samsuik.cannonlib.physics.shape.AABB;
 import me.samsuik.cannonlib.physics.shape.Shapes;
@@ -106,8 +105,8 @@ public final class Entity implements ComponentsHolder<Entity>, KeyedDataStorageH
 
     public Entity copy() {
         final Entity entity = new Entity();
-        entity.putData(DataKeys.COPY, true);
-//        entity.dataStorage.copyFrom(this.dataStorage);
+        entity.putData(EntityDataKeys.COPY, true);
+        entity.dataStorage.copyDataFrom(this.dataStorage);
         entity.components.copyComponentsFrom(this.components);
         entity.position = this.position;
         entity.momentum = this.momentum;

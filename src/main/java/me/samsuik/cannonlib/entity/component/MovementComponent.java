@@ -2,7 +2,9 @@ package me.samsuik.cannonlib.entity.component;
 
 import me.samsuik.cannonlib.component.Component;
 import me.samsuik.cannonlib.entity.Entity;
-import me.samsuik.cannonlib.entity.MovementCollisions;
+import me.samsuik.cannonlib.physics.shape.AABB;
+import me.samsuik.cannonlib.physics.shape.Shape;
+import me.samsuik.cannonlib.physics.shape.Shapes;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
 
 public final class MovementComponent implements Component<Entity> {
@@ -18,8 +20,8 @@ public final class MovementComponent implements Component<Entity> {
     public void action(final Entity entity, final int tick) {
         final Vec3d movement = entity.momentum;
         final Vec3d relative;
-        if (this.collisions) {
-            relative = MovementCollisions.collide(entity, movement, this.entitySize);
+        if (this.collisions && entity.getWorld() != null) {
+            relative = this.collide(entity, movement);
         } else {
             relative = movement;
         }
@@ -38,5 +40,45 @@ public final class MovementComponent implements Component<Entity> {
 
         entity.onGround = ground;
         entity.position = entity.position.add(relative);
+    }
+
+    private Vec3d collide(final Entity entity, final Vec3d movement) {
+        final Iterable<Shape> collisions = entity.getWorld().getCollisions();
+        AABB entityBB = Shapes.entityBoundingBox(entity.position, this.entitySize);
+
+        double moveX = movement.x();
+        double moveY = movement.y();
+        double moveZ = movement.z();
+
+        if (moveY != 0.0) {
+            for (final Shape shape : collisions) {
+                moveY = shape.collideY(entityBB, moveY);
+            }
+            entityBB = entityBB.move(0.0, moveY, 0.0);
+        }
+
+        final boolean xSmaller = movement.x() < movement.z();
+        if (xSmaller && movement.z() != 0.0) {
+            for (final Shape shape : collisions) {
+                moveZ = shape.collideZ(entityBB, moveZ);
+            }
+            entityBB = entityBB.move(0.0, 0.0, moveZ);
+        }
+
+        if (movement.x() != 0.0) {
+            for (final Shape shape : collisions) {
+                moveX = shape.collideX(entityBB, moveX);
+            }
+            if (!xSmaller) {
+                entityBB = entityBB.move(moveX, 0.0, 0.0);
+            }
+        }
+
+        if (!xSmaller && movement.z() != 0.0) {
+            for (final Shape shape : collisions) {
+                moveZ = shape.collideZ(entityBB, moveZ);
+            }
+        }
+        return new Vec3d(moveX, moveY, moveZ);
     }
 }

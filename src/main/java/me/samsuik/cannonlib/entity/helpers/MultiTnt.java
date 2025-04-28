@@ -15,7 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class MultiTnt {
-    private static final Pattern MULTI_PATTERN = Pattern.compile("([mwf]):(\\d+)");
+    private static final Pattern MULTI_PATTERN = Pattern.compile("(?<tag>[mwf]):(?<value>\\d+)");
 
     public static Entity createFromMultiString(
             final String multiString,
@@ -51,8 +51,8 @@ public final class MultiTnt {
         final Map<MultiTag, Integer> tags = new HashMap<>();
         final Matcher matcher = MULTI_PATTERN.matcher(multiString);
         while (matcher.find()) {
-            final MultiTag tag = MultiTag.match(matcher.group(1));
-            final int value = Integer.parseInt(matcher.group(2));
+            final MultiTag tag = MultiTag.match(matcher.group("tag"));
+            final int value = Integer.parseInt(matcher.group("value"));
             tags.put(tag, value);
         }
         return tags;

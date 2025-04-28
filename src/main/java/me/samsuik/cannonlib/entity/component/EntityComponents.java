@@ -4,7 +4,7 @@ import me.samsuik.cannonlib.block.Block;
 import me.samsuik.cannonlib.block.Blocks;
 import me.samsuik.cannonlib.component.Component;
 import me.samsuik.cannonlib.entity.Entity;
-import me.samsuik.cannonlib.entity.data.DataKey;
+import me.samsuik.cannonlib.data.DataKey;
 
 import java.util.List;
 import java.util.function.BiConsumer;

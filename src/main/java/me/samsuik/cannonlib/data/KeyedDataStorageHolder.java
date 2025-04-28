@@ -1,4 +1,4 @@
-package me.samsuik.cannonlib.entity.data;
+package me.samsuik.cannonlib.data;
 
 public interface KeyedDataStorageHolder {
     default <T> T removeData(final DataKey<T> key) {

@@ -1,9 +1,9 @@
 package me.samsuik.cannonlib.entity.component;
 
-import me.samsuik.cannonlib.World;
+import me.samsuik.cannonlib.world.World;
 import me.samsuik.cannonlib.component.Component;
 import me.samsuik.cannonlib.entity.Entity;
-import me.samsuik.cannonlib.entity.data.DataKeys;
+import me.samsuik.cannonlib.entity.EntityDataKeys;
 import me.samsuik.cannonlib.explosion.Explosion;
 import me.samsuik.cannonlib.explosion.ExplosionFlags;
 import me.samsuik.cannonlib.explosion.Obstruction;
@@ -32,10 +32,10 @@ public final class ExplodeComponent implements Component<Entity> {
 
         final World world = entity.getWorld();
         final Obstruction obstruction = new Obstruction();
-        for (int count = this.amount - 1; count >= 0; --count) {
-            final Set<Vec3i> blocksToExplode = Explosion.explode(entity, obstruction, this.amount - count, flags);
+        for (int remaining = this.amount - 1; remaining >= 0; --remaining) {
+            final Set<Vec3i> blocksToExplode = Explosion.explode(entity, obstruction, this.amount - remaining, flags);
 
-            if (count != 0 || entity.getData(DataKeys.REPEAT)) {
+            if (remaining != 0 || entity.getData(EntityDataKeys.REPEAT)) {
                 // Handle swinging
                 final Vec3d entityPosition = entity.getEntityState().position();
                 final Vec3d explosionPosition = Explosion.explosionPosition(entity.position);
@@ -58,7 +58,7 @@ public final class ExplodeComponent implements Component<Entity> {
             }
         }
 
-        entity.putData(DataKeys.EXPLODED, true);
+        entity.putData(EntityDataKeys.EXPLODED, true);
         entity.removeCurrentComponent();
         entity.remove();
     }

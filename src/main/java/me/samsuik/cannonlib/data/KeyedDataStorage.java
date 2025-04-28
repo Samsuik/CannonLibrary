@@ -1,4 +1,4 @@
-package me.samsuik.cannonlib.entity.data;
+package me.samsuik.cannonlib.data;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,5 +24,9 @@ public final class KeyedDataStorage {
     }
     public boolean containsKey(final DataKey<?> key) {
         return this.storedData.containsKey(key);
+    }
+
+    public void copyDataFrom(final KeyedDataStorage dataStorage) {
+        this.storedData.putAll(dataStorage.storedData);
     }
 }

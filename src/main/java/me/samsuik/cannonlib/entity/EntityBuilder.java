@@ -2,7 +2,6 @@ package me.samsuik.cannonlib.entity;
 
 import me.samsuik.cannonlib.component.Component;
 import me.samsuik.cannonlib.physics.Rotation;
-import me.samsuik.cannonlib.physics.shape.Shape;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
 
 import java.util.*;
@@ -12,7 +11,6 @@ public final class EntityBuilder {
     private Vec3d momentum = Vec3d.zero();
     private final Set<Rotation> alignments = new HashSet<>();
     private final List<Component<Entity>> components = new ArrayList<>();
-    private final List<Shape> collisions = new ArrayList<>();
 
     public EntityBuilder position(final Vec3d position) {
         this.position = Objects.requireNonNull(position, "position cannot be null");
@@ -54,17 +52,6 @@ public final class EntityBuilder {
         return this;
     }
 
-    public EntityBuilder collisions(final Shape... collisions) {
-        return this.collisions(Arrays.asList(collisions));
-    }
-
-    public EntityBuilder collisions(final List<Shape> collisions) {
-        for (final Shape collision : collisions) {
-            this.collisions.add(Objects.requireNonNull(collision, "collision cannot be null"));
-        }
-        return this;
-    }
-
     public Entity build() {
         final Entity entity = new Entity();
         entity.position = this.position;
@@ -78,7 +65,6 @@ public final class EntityBuilder {
             entity.getComponents().addComponent(component);
         }
 
-        entity.collisions.addAll(this.collisions);
         return entity;
     }
 }

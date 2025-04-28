@@ -1,10 +1,10 @@
 package me.samsuik.cannonlib.entity.component;
 
-import me.samsuik.cannonlib.World;
+import me.samsuik.cannonlib.world.World;
 import me.samsuik.cannonlib.block.Block;
 import me.samsuik.cannonlib.block.Blocks;
 import me.samsuik.cannonlib.entity.Entity;
-import me.samsuik.cannonlib.entity.data.DataKeys;
+import me.samsuik.cannonlib.entity.EntityDataKeys;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
 import me.samsuik.cannonlib.physics.vec3.Vec3i;
 
@@ -27,8 +27,8 @@ public final class EntityConditions {
     public static final Predicate<Entity> IS_ON_GROUND = entity -> entity.onGround;
     public static final Predicate<Entity> IS_ALIVE = entity -> !entity.shouldRemove();
     public static final Predicate<Entity> HAS_MOMENTUM = entity -> entity.momentum.magnitudeSquared() > 0.0;
-    public static final Predicate<Entity> HAS_STACKED = entity -> entity.getDataOrDefault(DataKeys.STACKED, true);
-    public static final Predicate<Entity> HAS_EXPLODED = entity -> entity.getDataOrDefault(DataKeys.EXPLODED, false);
+    public static final Predicate<Entity> HAS_STACKED = entity -> entity.getDataOrDefault(EntityDataKeys.STACKED, true);
+    public static final Predicate<Entity> HAS_EXPLODED = entity -> entity.getDataOrDefault(EntityDataKeys.EXPLODED, false);
 
     public static final Predicate<Entity> CAN_STACK = entity -> {
         if (!entity.onGround) {
