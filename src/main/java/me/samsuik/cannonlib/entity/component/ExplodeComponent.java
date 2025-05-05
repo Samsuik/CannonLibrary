@@ -1,6 +1,6 @@
 package me.samsuik.cannonlib.entity.component;
 
-import me.samsuik.cannonlib.world.World;
+import me.samsuik.cannonlib.World;
 import me.samsuik.cannonlib.component.Component;
 import me.samsuik.cannonlib.entity.Entity;
 import me.samsuik.cannonlib.entity.EntityDataKeys;
@@ -14,20 +14,18 @@ import java.util.Set;
 
 public final class ExplodeComponent implements Component<Entity> {
     private static final ThreadLocal<Boolean> TICKING = ThreadLocal.withInitial(() -> false);
-    private final int fuse;
     private final int amount;
     private final int flags;
 
-    public ExplodeComponent(final int fuse, final int amount, final int flags) {
-        this.fuse = fuse;
+    public ExplodeComponent(final int amount, final int flags) {
         this.amount = amount;
         this.flags = flags;
     }
 
     @Override
-    public void action(final Entity entity, final int tick) {
-        if (tick < this.fuse || TICKING.get()) {
-            return;
+    public boolean action(final Entity entity, final int tick) {
+        if (TICKING.get()) {
+            return false;
         }
 
         final World world = entity.getWorld();
@@ -35,7 +33,7 @@ public final class ExplodeComponent implements Component<Entity> {
         for (int remaining = this.amount - 1; remaining >= 0; --remaining) {
             final Set<Vec3i> blocksToExplode = Explosion.explode(entity, obstruction, this.amount - remaining, flags);
 
-            if (remaining != 0 || entity.getData(EntityDataKeys.REPEAT)) {
+            if (remaining != 0 || entity.hasData(EntityDataKeys.REPEAT)) {
                 // Handle swinging
                 final Vec3d entityPosition = entity.getEntityState().position();
                 final Vec3d explosionPosition = Explosion.explosionPosition(entity.position);
@@ -58,8 +56,8 @@ public final class ExplodeComponent implements Component<Entity> {
             }
         }
 
-        entity.putData(EntityDataKeys.EXPLODED, true);
-        entity.removeCurrentComponent();
+        entity.putData(EntityDataKeys.EXPLODED, COUNTER.getAndIncrement());
         entity.remove();
+        return true;
     }
 }

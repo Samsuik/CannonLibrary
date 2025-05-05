@@ -5,28 +5,26 @@ import me.samsuik.cannonlib.data.KeyedDataStorageHolder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public interface Component<U extends ComponentsHolder<?>> {
-    default boolean action0(final U user, final int tick) {
-        this.action(user, tick);
-        return true;
-    }
+    AtomicInteger COUNTER = new AtomicInteger();
 
-    void action(final U user, final int tick);
+    boolean action(final U user, final int tick);
 
-    static <U extends ComponentsHolder<?>> Component<U> self(final Component<U> component) {
+    static <U extends ComponentsHolder<?>> Component<U> self(final SimpleComponent<U> component) {
         return component;
     }
 
-    static <U extends ComponentsHolder<?>> Component<U> user(final Consumer<U> consumer) {
+    static <U extends ComponentsHolder<?>> SimpleComponent<U> user(final Consumer<U> consumer) {
         return (user, tick) -> consumer.accept(user);
     }
 
     static <U extends ComponentsHolder<?>> Component<U> later(final int waitForTick, final Consumer<U> consumer) {
-        return user(consumer).afterOrAtTick(waitForTick).limit(1);
+        return user(consumer).afterOrAtTick(waitForTick);
     }
 
     @SafeVarargs
@@ -38,37 +36,26 @@ public interface Component<U extends ComponentsHolder<?>> {
         return joinedComponents;
     }
 
-    static <U extends ComponentsHolder<?>> Component<U> join(final List<Component<U>> components) {
-        if (components.isEmpty()) {
-            throw new IllegalArgumentException("empty list");
-        }
-        Component<U> component = components.getFirst();
-        for (final Component<U> otherComponent : components) {
-            if (otherComponent != component) {
-                component = component.and(otherComponent);
-            }
-        }
-        return component;
-    }
-
     static <U extends ComponentsHolder<?>> Component<U> wrap(final List<Component<U>> components) {
         return (user, tick) -> {
+            boolean success = false;
             for (final Component<U> component : components) {
-                component.action(user, tick);
+                success = component.action(user, tick);
             }
+            return success;
         };
     }
 
     default Component<U> compose(final Component<U> component) {
-        return this.condition(component::action0);
+        return this.condition(component::action);
     }
 
     default Component<U> and(final Component<U> component) {
-        return component.condition(Component.this::action0);
+        return component.condition(Component.this::action);
     }
 
     default Component<U> or(final Component<U> component) {
-        return component.unless(Component.this::action0);
+        return component.unless(Component.this::action);
     }
 
     default Component<U> beforeTick(final int expectedTick) {
@@ -96,59 +83,40 @@ public interface Component<U extends ComponentsHolder<?>> {
     }
 
     default Component<U> condition(final BiPredicate<U, Integer> condition) {
-        return new Component<>() {
-            @Override
-            public void action(final U user, final int tick) {
-                this.action0(user, tick);
-            }
-
-            @Override
-            public boolean action0(final U user, final int tick) {
-                return condition.test(user, tick) && Component.this.action0(user, tick);
-            }
-        };
+        return (user, tick) -> condition.test(user, tick) && Component.this.action(user, tick);
     }
 
     default Component<U> repeat(final int times) {
-        return new Component<>() {
-            @Override
-            public void action(final U user, final int tick) {
-                this.action0(user, tick);
+        return (user, tick) -> {
+            boolean nested = false;
+            if (user instanceof KeyedDataStorageHolder holder) {
+                nested = holder.putData(EntityDataKeys.REPEAT, true);
             }
 
-            @Override
-            public boolean action0(final U user, final int tick) {
-                boolean nested = false;
-                if (user instanceof KeyedDataStorageHolder holder) {
-                    nested = holder.putData(EntityDataKeys.REPEAT, true);
-                }
-
-                boolean success = true;
-                for (int count = 0; count < times; ++count) {
-                    success &= Component.this.action0(user, tick);
-                }
-
-                if (!nested && user instanceof KeyedDataStorageHolder holder) {
-                    holder.removeData(EntityDataKeys.REPEAT);
-                }
-                return success;
+            boolean success = true;
+            for (int count = 0; count < times; ++count) {
+                success &= Component.this.action(user, tick);
             }
+
+            if (!nested && user instanceof KeyedDataStorageHolder holder) {
+                holder.removeData(EntityDataKeys.REPEAT);
+            }
+            return success;
         };
     }
 
     default Component<U> limit(final int limit) {
         return new Component<>() {
-            private int ticks = 0;
+            private int times = 0;
 
             @Override
-            public void action(final U user, final int tick) {
-                if (this.ticks++ < limit) {
-                    Component.this.action(user, tick);
+            public boolean action(final U user, final int tick) {
+                boolean success = false;
+                if (this.times++ < limit) {
+                    // user.removeCurrentComponent();
+                    success = Component.this.action(user, tick);
                 }
-                // todo: see comment in Components
-                if (this.ticks >= limit) {
-                    user.removeCurrentComponent();
-                }
+                return success;
             }
         };
     }

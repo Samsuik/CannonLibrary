@@ -1,6 +1,6 @@
 package me.samsuik.cannonlib.entity.component;
 
-import me.samsuik.cannonlib.world.World;
+import me.samsuik.cannonlib.World;
 import me.samsuik.cannonlib.block.Block;
 import me.samsuik.cannonlib.block.Blocks;
 import me.samsuik.cannonlib.component.Component;
@@ -19,13 +19,13 @@ public final class FallingBlockComponent implements Component<Entity> {
     }
 
     @Override
-    public void action(final Entity entity, final int tick) {
+    public boolean action(final Entity entity, final int tick) {
         if (!entity.onGround || TICKING.get()) {
-            return;
+            return false;
         }
 
         for (int count = 0; count < this.amount; ++count) {
-            if (count != 0 || entity.getData(EntityDataKeys.REPEAT)) {
+            if (count != 0 || entity.hasData(EntityDataKeys.REPEAT)) {
                 entity.getEntityState().apply(entity);
                 TICKING.set(true);
                 entity.tick();
@@ -36,12 +36,11 @@ public final class FallingBlockComponent implements Component<Entity> {
             final Vec3i blockPos = entity.position.toVec3i();
             final Block presentBlock = world.getBlockAt(blockPos);
             if (presentBlock == Blocks.MOVING_PISTON) {
-                return;
+                return false;
             }
 
-            // It would be too intensive to look for entity/global collisions to stack on.
-            // As a compromise you have to "opt in" to falling blocks breaking when trying to stack midair.
-            final Block belowBlock = world.getBlockAt(blockPos.add(0, -1, 0));
+            // As an optimisation falling blocks will only break if the block below is air
+            final Block belowBlock = world.getBlockAt(blockPos.down());
             if (belowBlock != Blocks.AIR && (presentBlock == null || presentBlock.replace())) {
                 world.setBlock(blockPos, block);
             } else {
@@ -49,8 +48,8 @@ public final class FallingBlockComponent implements Component<Entity> {
             }
         }
 
-        entity.putData(EntityDataKeys.STACKED, true);
-        entity.removeCurrentComponent();
+        entity.putData(EntityDataKeys.STACKED, COUNTER.getAndIncrement());
         entity.remove();
+        return true;
     }
 }

@@ -16,6 +16,10 @@ public interface Shape {
 
     Shape move(final Vec3<?> vec3);
 
+    Shape rotate(final int degreesX, final int degreesY);
+
+    Shape rotateYZ(final int degrees);
+
     Shape rotateXZ(final int degrees);
 
     Shape flip(final Rotation.RotationAxis axis);

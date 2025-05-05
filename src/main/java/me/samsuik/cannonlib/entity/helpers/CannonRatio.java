@@ -1,6 +1,6 @@
 package me.samsuik.cannonlib.entity.helpers;
 
-import me.samsuik.cannonlib.world.World;
+import me.samsuik.cannonlib.World;
 import me.samsuik.cannonlib.block.Block;
 import me.samsuik.cannonlib.block.Blocks;
 import me.samsuik.cannonlib.component.Component;
@@ -35,7 +35,7 @@ public final class CannonRatio {
             final Map<String, Vec3d> offsets,
             final List<Component<Entity>> extraComponents
     ) {
-        int[] powerOffset = {-10};
+        final int[] powerOffset = {-10};
         final PriorityQueue<RatioEntityData> sortedRatioEntityData = new PriorityQueue<>(Comparator.comparingDouble(RatioEntityData::tick));
         final String[] lines = ratioString.split("\n");
         for (final String line : lines) {
@@ -45,14 +45,13 @@ public final class CannonRatio {
 
             final RatioEntityData ratioEntityData = readEntityData(line, powerOffset, position, offsets);
             if (ratioEntityData != null) {
-                LOGGER.debug("+ {}", ratioEntityData);
                 sortedRatioEntityData.add(ratioEntityData);
             }
         }
 
         RatioEntityData ratioEntityData;
         while ((ratioEntityData = sortedRatioEntityData.poll()) != null) {
-            LOGGER.debug("@ {}", ratioEntityData);
+            LOGGER.debug("+ {}", ratioEntityData);
             world.addEntity(ratioEntityData.createEntity(useGameTicks, explosionFlags, extraComponents));
         }
     }
@@ -102,7 +101,7 @@ public final class CannonRatio {
 
         if (isSand) {
             tick += 1.0e-3;
-        } else {
+        } else if (!isPower) {
             tick += 1.0e-5; // always after the power if the ticks are equal
         }
 
@@ -118,16 +117,19 @@ public final class CannonRatio {
     private record RatioEntityData(String name, Vec3d position, double tick, int amount, boolean power, boolean sand) {
         public Entity createEntity(final boolean useGameTicks, final int explosionFlags, final List<Component<Entity>> extraComponents) {
             final List<Component<Entity>> components = new ArrayList<>();
-            components.add(Component.<Entity>user(entity
-                            -> entity.putData(EntityDataKeys.NAME, this.name))
-                    .atTick(0)
-            );
-            components.add(EntityComponents.ENTITY_TICK_WITH_COLLISION
-                    .condition(EntityConditions.HAS_MOMENTUM
-                            .or(EntityConditions.hasEntityMoved(this.position()))
-                    )
-            );
+            components.add(EntityComponents.data(EntityDataKeys.NAME, this.name));
 
+            // Letting the power tick (and as a result swing) might create unexpected behaviour.
+            if (!this.power()) {
+                components.add(EntityComponents.ENTITY_TICK_WITH_COLLISION
+                        .condition(EntityConditions.HAS_MOMENTUM
+                                .or(EntityConditions.hasEntityMoved(this.position()))
+                        )
+                );
+            }
+
+            // Add extra components before the fb/explode component so the position and motion are accurate
+            // This does cause STACKED and EXPLODE data to not work correctly.
             components.addAll(extraComponents);
 
             if (this.sand()) {

@@ -1,5 +1,7 @@
 package me.samsuik.cannonlib.physics.vec3;
 
+import me.samsuik.cannonlib.physics.Rotation;
+
 public interface Vec3<T extends Vec3<?>> {
     T add(final T vec);
 
@@ -45,6 +47,18 @@ public interface Vec3<T extends Vec3<?>> {
                 Math.abs(this.getY()),
                 Math.abs(this.getZ())
         );
+    }
+
+    default Vec3d center() {
+        return this.floor().add(0.5, 0.0, 0.5);
+    }
+
+    default Vec3d center(final Rotation rotation) {
+        return switch (rotation.getAxis()) {
+            case X -> new Vec3d(Math.floor(this.getX()) + 0.5, this.getY(), this.getZ());
+            case Y -> new Vec3d(this.getX(), Math.floor(this.getY()), this.getZ());
+            case Z -> new Vec3d(this.getX(), this.getY(), Math.floor(this.getZ()) + 0.5);
+        };
     }
 
     default T invert() {

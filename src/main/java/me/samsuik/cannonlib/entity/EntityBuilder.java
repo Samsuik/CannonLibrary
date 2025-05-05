@@ -1,5 +1,7 @@
 package me.samsuik.cannonlib.entity;
 
+import me.samsuik.cannonlib.block.Block;
+import me.samsuik.cannonlib.block.Blocks;
 import me.samsuik.cannonlib.component.Component;
 import me.samsuik.cannonlib.physics.Rotation;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
@@ -9,7 +11,7 @@ import java.util.*;
 public final class EntityBuilder {
     private Vec3d position = Vec3d.zero();
     private Vec3d momentum = Vec3d.zero();
-    private final Set<Rotation> alignments = new HashSet<>();
+    private final Map<Rotation, Block> alignments = new LinkedHashMap<>();
     private final List<Component<Entity>> components = new ArrayList<>();
 
     public EntityBuilder position(final Vec3d position) {
@@ -27,15 +29,24 @@ public final class EntityBuilder {
     }
 
     public EntityBuilder alignment(final List<Rotation> alignments) {
-        for (final Rotation alignment : alignments) {
-            final Rotation checkedAlignment = Objects.requireNonNull(alignment, "alignment cannot be null");
-            final Rotation oppositeAlignment = checkedAlignment.getOpposite();
+        final Map<Rotation, Block> blockAlignments = new LinkedHashMap<>();
+        for (final Rotation rotation : alignments) {
+            blockAlignments.put(rotation, Blocks.BEDROCK);
+        }
+        return this.alignment(blockAlignments);
+    }
 
-            if (this.alignments.contains(oppositeAlignment)) {
-                throw new IllegalArgumentException("conflicting alignment (provided: %s, contains: %s)".formatted(checkedAlignment, oppositeAlignment));
+    public EntityBuilder alignment(final Map<Rotation, Block> alignments) {
+        for (final Map.Entry<Rotation, Block> blockAlignment : alignments.entrySet()) {
+            final Rotation alignment = Objects.requireNonNull(blockAlignment.getKey(), "alignment cannot be null");
+            final Block block = Objects.requireNonNull(blockAlignment.getValue(), "block cannot be null");
+            final Rotation oppositeAlignment = alignment.getOpposite();
+
+            if (this.alignments.containsKey(oppositeAlignment)) {
+                throw new IllegalArgumentException("conflicting alignment (provided: %s, contains: %s)".formatted(alignment, oppositeAlignment));
             }
 
-            this.alignments.add(checkedAlignment);
+            this.alignments.put(alignment, block);
         }
         return this;
     }
@@ -57,8 +68,8 @@ public final class EntityBuilder {
         entity.position = this.position;
         entity.momentum = this.momentum;
 
-        for (final Rotation alignment : this.alignments) {
-            entity.align(alignment);
+        for (final Map.Entry<Rotation, Block> blockAlignment : this.alignments.entrySet()) {
+            entity.align(blockAlignment.getKey(), blockAlignment.getValue());
         }
 
         for (final Component<Entity> component : this.components) {

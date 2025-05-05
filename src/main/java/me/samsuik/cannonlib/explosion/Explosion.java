@@ -1,6 +1,6 @@
 package me.samsuik.cannonlib.explosion;
 
-import me.samsuik.cannonlib.world.World;
+import me.samsuik.cannonlib.World;
 import me.samsuik.cannonlib.block.Block;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
 import me.samsuik.cannonlib.entity.Entity;
@@ -75,6 +75,9 @@ public final class Explosion {
             blocksToExplode = Set.of();
         }
 
+        // todo: calculate swinging positions ahead of time, that way we can do stationary and swinging explosion optimisations as well as improving locality.
+        // Basically, the same way its done in Sakura. The SINGLE_IMPACT implementation might also be changed to instead multiply the impact instead of calculating it repeatedly.
+
         // Affect entities
         final boolean upToCount = (flags & ExplosionFlags.ENTITIES_UP_TO_COUNT) != 0;
         final int limit = upToCount ? (count * ExplosionFlags.readData(flags, 1)) : Integer.MAX_VALUE;
@@ -94,13 +97,19 @@ public final class Explosion {
                     impact = reuseImpact;
                 } else {
                     impact = Explosion.impact(position, explosionPosition, world, obstruction, flags);
-                    reuseImpact = impact;
+                    if (singleImpact && impact.magnitudeSquared() > 0.0) {
+                        reuseImpact = impact;
+                    }
                 }
                 otherEntity.momentum = otherEntity.momentum.add(impact);
             }
         }
 
         return blocksToExplode;
+    }
+
+    public static Vec3d impact(final Vec3d position, final Vec3d explosionPosition) {
+        return impact(position, explosionPosition, null, null, 0);
     }
 
     public static Vec3d impact(
@@ -124,7 +133,6 @@ public final class Explosion {
             blockDensity = 1.0f;
         }
 
-        // This is required to preserve floating point issues
         final double exposure = (1.0 - magnitude / 8.0) * blockDensity;
         final Vec3d normalised = difference.div(magnitude);
         return normalised.scale(exposure);

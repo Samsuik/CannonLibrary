@@ -5,10 +5,6 @@ public interface ComponentsHolder<U extends ComponentsHolder<?>> {
         this.getComponents().addComponent(component);
     }
 
-    default void removeCurrentComponent() {
-        this.getComponents().removeCurrentComponent();
-    }
-
     default void removeComponent(final Component<?> component) {
         this.getComponents().removeComponent(component);
     }

@@ -1,6 +1,6 @@
 package me.samsuik.cannonlib.entity.component;
 
-import me.samsuik.cannonlib.component.Component;
+import me.samsuik.cannonlib.component.SimpleComponent;
 import me.samsuik.cannonlib.entity.Entity;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
 import org.slf4j.Logger;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public final class LoggerComponent implements Component<Entity> {
+public final class LoggerComponent implements SimpleComponent<Entity> {
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggerComponent.class);
     private final Function<Entity, List<String>> entityInfo;
     private final Object[] extraInfo;
@@ -21,7 +21,7 @@ public final class LoggerComponent implements Component<Entity> {
     }
 
     @Override
-    public void action(final Entity entity, final int tick) {
+    public void action0(final Entity entity, final int tick) {
         final List<String> suffix = new ArrayList<>();
         final List<String> entityInfoList = this.entityInfo.apply(entity);
         for (int in = 1; in < entityInfoList.size(); ++in) {

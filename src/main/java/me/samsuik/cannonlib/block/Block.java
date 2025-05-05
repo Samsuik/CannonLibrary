@@ -16,8 +16,17 @@ public record Block(String name, BlockShape shape, float blastResistance, boolea
         return new Block(this.name, rotatedShape, this.blastResistance);
     }
 
+    public Block rotate(final int degreesX, final int degreesY) {
+        final BlockShape rotatedShape = this.shape.rotate(degreesX, degreesY);
+        return new Block(this.name, rotatedShape, this.blastResistance);
+    }
+
     public Block flip(final Rotation.RotationAxis axis) {
         return new Block(this.name, this.shape.flip(axis), this.blastResistance);
+    }
+
+    public Block name(final String newName) {
+        return new Block(newName, this.shape, this.blastResistance);
     }
 
     @Override

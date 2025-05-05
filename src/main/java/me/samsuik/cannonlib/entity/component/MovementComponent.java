@@ -1,13 +1,13 @@
 package me.samsuik.cannonlib.entity.component;
 
-import me.samsuik.cannonlib.component.Component;
+import me.samsuik.cannonlib.component.SimpleComponent;
 import me.samsuik.cannonlib.entity.Entity;
 import me.samsuik.cannonlib.physics.shape.AABB;
 import me.samsuik.cannonlib.physics.shape.Shape;
 import me.samsuik.cannonlib.physics.shape.Shapes;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
 
-public final class MovementComponent implements Component<Entity> {
+public final class MovementComponent implements SimpleComponent<Entity> {
     private final float entitySize;
     private final boolean collisions;
 
@@ -17,7 +17,7 @@ public final class MovementComponent implements Component<Entity> {
     }
 
     @Override
-    public void action(final Entity entity, final int tick) {
+    public void action0(final Entity entity, final int tick) {
         final Vec3d movement = entity.momentum;
         final Vec3d relative;
         if (this.collisions && entity.getWorld() != null) {
@@ -57,15 +57,15 @@ public final class MovementComponent implements Component<Entity> {
             entityBB = entityBB.move(0.0, moveY, 0.0);
         }
 
-        final boolean xSmaller = movement.x() < movement.z();
-        if (xSmaller && movement.z() != 0.0) {
+        final boolean xSmaller = Math.abs(moveX) < Math.abs(moveZ);
+        if (xSmaller && moveZ != 0.0) {
             for (final Shape shape : collisions) {
                 moveZ = shape.collideZ(entityBB, moveZ);
             }
             entityBB = entityBB.move(0.0, 0.0, moveZ);
         }
 
-        if (movement.x() != 0.0) {
+        if (moveX != 0.0) {
             for (final Shape shape : collisions) {
                 moveX = shape.collideX(entityBB, moveX);
             }
@@ -74,7 +74,7 @@ public final class MovementComponent implements Component<Entity> {
             }
         }
 
-        if (!xSmaller && movement.z() != 0.0) {
+        if (!xSmaller && moveZ != 0.0) {
             for (final Shape shape : collisions) {
                 moveZ = shape.collideZ(entityBB, moveZ);
             }

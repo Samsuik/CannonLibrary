@@ -28,8 +28,6 @@ public final class Components<U extends ComponentsHolder<?>> {
         if (!this.ticking) {
             throw new IllegalStateException("Not currently ticking any components");
         } else if (!this.removed) {
-            // The current system for "retiring" components is highly problematic, as there's many cases where it's not possible to remove the component.
-            // In the future components that have delayed logic have to execute at a specific tick, and they need to know when we're backtracking.
             return;
         }
 

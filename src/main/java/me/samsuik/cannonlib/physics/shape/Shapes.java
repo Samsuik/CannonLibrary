@@ -10,6 +10,7 @@ public final class Shapes {
     public static final BlockShape LADDER = BlockShape.single(Shapes.box(0.0, 0.0, 0.0, 16.0, 16.0, 3.0));
     public static final BlockShape HANGING_SIGN = BlockShape.single(Shapes.column(16.0, 4.0, 14.0, 16.0));
     public static final BlockShape TRAPDOOR = BlockShape.single(Shapes.column(16.0, 16.0, 13.0, 16.0));
+    public static final BlockShape SIDE_TRAPDOOR = TRAPDOOR.rotate(90, 0);
     public static final BlockShape SLAB = BlockShape.single(Shapes.column(16.0, 16.0, 0.0, 8.0));
     public static final BlockShape STAIR = new BlockShape(List.of(
             Shapes.column(16.0, 16.0, 0.0, 8.0),
@@ -45,6 +46,7 @@ public final class Shapes {
             Shapes.box(4.0, 0.0, 2.0, 12.0, 12.0, 14.0)
     ));
     public static final BlockShape AMETHYST_CLUSTER = BlockShape.single(Shapes.box(3.0f, 3.0f, 9.0f, 13.0f, 13.0f, 16.0));
+    public static final BlockShape CEILING_AMETHYST_CLUSTER = AMETHYST_CLUSTER.rotate(90, 0);
     public static final BlockShape LARGE_AMETHYST_BUD = BlockShape.single(Shapes.box(3.0, 3.0, 11.0, 13.0, 13.0, 16.0));
     public static final BlockShape MEDIUM_AMETHYST_BUD = BlockShape.single(Shapes.box(3.0, 3.0, 12.0, 13.0, 13.0, 16.0));
     public static final BlockShape SMALL_AMETHYST_BUD = BlockShape.single(Shapes.box(4.0, 4.0, 13.0, 12.0, 12.0, 16.0));
@@ -82,10 +84,10 @@ public final class Shapes {
             Shapes.box(6.0, 5.0, 4.0, 10.0, 10.0, 12.0),
             Shapes.box(3.0, 10.0, 0.0, 13.0, 16.0, 16.0)
     ));
-    public static final BlockShape GLASS_PANE = BlockShape.single(Shapes.column(1.0, 1.0, 0.0, 16.0));
+    public static final BlockShape GLASS_PANE = BlockShape.single(Shapes.column(2.0, 2.0, 0.0, 16.0));
     public static final BlockShape FENCE_GATE = BlockShape.single(Shapes.box(0.0D, 0.0D, 6.0D, 16.0D, 24.0D, 10.0D));
-    public static final BlockShape FENCE = BlockShape.single(Shapes.column(2.0, 2.0, 0.0, 24.0));
-    public static final BlockShape WALL = BlockShape.single(Shapes.column(4.0, 4.0, 0.0, 24.0));
+    public static final BlockShape FENCE = BlockShape.single(Shapes.column(4.0, 4.0, 0.0, 24.0));
+    public static final BlockShape WALL = BlockShape.single(Shapes.column(8.0, 8.0, 0.0, 24.0));
     public static final BlockShape CANDLE_0 = BlockShape.single(Shapes.box(7.0, 0.0, 7.0, 9.0, 6.0, 9.0));
     public static final BlockShape CANDLE_1 = BlockShape.single(Shapes.box(5.0, 0.0, 6.0, 11.0, 6.0, 9.0));
     public static final BlockShape CANDLE_2 = BlockShape.single(Shapes.box(5.0, 0.0, 6.0, 10.0, 6.0, 11.0));

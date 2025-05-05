@@ -1,5 +1,7 @@
 package me.samsuik.cannonlib.physics.vec3;
 
+import me.samsuik.cannonlib.physics.Rotation;
+
 public record Vec3i(int x, int y, int z) implements Vec3<Vec3i> {
     public static Vec3i zero() {
         return new Vec3i(0, 0, 0);
@@ -55,8 +57,12 @@ public record Vec3i(int x, int y, int z) implements Vec3<Vec3i> {
 
     @Override
     public Vec3i div(final double by) {
-        int asInt = (int) by;
-        return this.div(asInt, asInt, asInt);
+        if (by >= 1.0) {
+            final int asInt = (int) by;
+            return this.div(asInt, asInt, asInt);
+        } else {
+            return this.scale(1.0 / by);
+        }
     }
 
     public Vec3i div(final int x, final int y, final int z) {
@@ -65,8 +71,12 @@ public record Vec3i(int x, int y, int z) implements Vec3<Vec3i> {
 
     @Override
     public Vec3i scale(final double n) {
-        final int a = (int) (1.0 / n);
-        return this.div(a, a, a);
+        if (n >= 1.0) {
+            final int asInt = (int) n;
+            return this.mul(asInt, asInt, asInt);
+        } else {
+            return this.div(1.0 / n);
+        }
     }
 
     @Override
@@ -85,6 +95,38 @@ public record Vec3i(int x, int y, int z) implements Vec3<Vec3i> {
                 Math.max(this.y, vec.y),
                 Math.max(this.z, vec.z)
         );
+    }
+
+    public Vec3i down() {
+        return this.move(Rotation.DOWN);
+    }
+
+    public Vec3i up() {
+        return this.move(Rotation.UP);
+    }
+
+    public Vec3i north() {
+        return this.move(Rotation.NORTH);
+    }
+
+    public Vec3i south() {
+        return this.move(Rotation.SOUTH);
+    }
+
+    public Vec3i west() {
+        return this.move(Rotation.WEST);
+    }
+
+    public Vec3i east() {
+        return this.move(Rotation.EAST);
+    }
+
+    public Vec3i move(final Rotation rotation) {
+        return move(rotation, 1);
+    }
+
+    public Vec3i move(final Rotation rotation, final int amount) {
+        return this.add(rotation.getDirection().toVec3i().scale(amount));
     }
 
     @Override

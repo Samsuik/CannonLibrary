@@ -1,8 +1,6 @@
-package me.samsuik.cannonlib.world;
+package me.samsuik.cannonlib;
 
 import me.samsuik.cannonlib.block.Block;
-import me.samsuik.cannonlib.component.Components;
-import me.samsuik.cannonlib.component.ComponentsHolder;
 import me.samsuik.cannonlib.entity.Entity;
 import me.samsuik.cannonlib.physics.shape.Shape;
 import me.samsuik.cannonlib.physics.shape.Shapes;
@@ -10,14 +8,13 @@ import me.samsuik.cannonlib.physics.vec3.Vec3i;
 
 import java.util.*;
 
-public final class World implements ComponentsHolder<World> {
-    private final Components<World> components = new Components<>();
+public final class World {
     private final EntityList entityList = new EntityList();
-    private final List<Shape> globalCollisions = new ArrayList<>();
     // todo: tree
     private final Map<Vec3i, Block> blocks = new HashMap<>();
     private final Map<Vec3i, Shape> blockShapes = new HashMap<>();
     private final List<Shape> blockCollisions = new ArrayList<>();
+    private final List<Shape> globalCollisions = new ArrayList<>();
 
     public boolean hasEntities() {
         return !this.entityList.isEmpty();
@@ -41,24 +38,25 @@ public final class World implements ComponentsHolder<World> {
     }
 
     public void addEntity(final Entity entity) {
-        entity.setWorld(this);
         this.entityList.add(entity);
+        entity.changeWorld(this);
     }
 
     public void removeEntity(final Entity entity) {
-        entity.setWorld(null);
         this.entityList.remove(entity);
+        entity.changeWorld(null);
     }
 
     public List<Entity> cloneEntity(final Entity entity, final int amount) {
-        assert entity.getWorld() == this : "entity must be a member of this world";
+        assert entity.getWorld() == this : "entity must be apart of this world";
         final List<Entity> clonedEntities = new ArrayList<>(amount);
         for (int count = 0; count < amount; ++count) {
-            final Entity entityCopy = entity.copy();
-            entityCopy.setWorld(this);
-            clonedEntities.add(entityCopy);
+            clonedEntities.add(entity.copy());
         }
         this.entityList.addAllAfter(entity, clonedEntities);
+        for (final Entity clonedEntity : clonedEntities) {
+            clonedEntity.changeWorld(this);
+        }
         return clonedEntities;
     }
 
@@ -119,12 +117,7 @@ public final class World implements ComponentsHolder<World> {
     }
     
     public Collisions getCollisions() {
-        return new Collisions(this.globalCollisions, this.blockCollisions);
-    }
-
-    @Override
-    public Components<World> getComponents() {
-        return this.components;
+        return new Collisions(this.blockCollisions, this.globalCollisions);
     }
 
     public World snapshot() {

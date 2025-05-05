@@ -6,6 +6,7 @@ import me.samsuik.cannonlib.physics.vec3.Vec3d;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public final class AABB implements Shape {
@@ -110,11 +111,16 @@ public final class AABB implements Shape {
         );
     }
 
-    private AABB performBlockRotation(final Function<Vec3d, Vec3d> transform) {
+    private AABB performBlockRotation(final int degrees, final BiFunction<Integer, Vec3d, Vec3d> transform) {
+        final int normDeg = ((degrees % 360) + 360) % 360;
+        if (normDeg % 90 != 0) {
+            throw new IllegalArgumentException("Angle must be 0, 90, 180, or 270 degrees. Got: " + degrees);
+        }
+
         Vec3d min = Vec3d.xyz(Double.POSITIVE_INFINITY);
         Vec3d max = Vec3d.xyz(Double.NEGATIVE_INFINITY);
         for (final Vec3d corner : this.corners()) {
-            final Vec3d transformed = transform.apply(corner);
+            final Vec3d transformed = transform.apply(degrees, corner);
             min = transformed.min(min);
             max = transformed.max(max);
         }
@@ -122,22 +128,32 @@ public final class AABB implements Shape {
     }
 
     @Override
-    public Shape rotateXZ(final int degreesY) {
-        final int normDeg = ((degreesY % 360) + 360) % 360;
-        final Function<Vec3d, Vec3d> transform;
-        switch (normDeg) {
-            case 0 -> transform   = p -> p;
-            case 90 -> transform  = p -> new Vec3d(p.z(), p.y(), 1.0 - p.x());
-            case 180 -> transform = p -> new Vec3d(1.0 - p.x(), p.y(), 1.0 - p.z());
-            case 270 -> transform = p -> new Vec3d(1.0 - p.z(), p.y(), p.x());
-            default -> throw new IllegalArgumentException("Angle must be 0, 90, 180, or 270 degrees. Got: " + degreesY);
-        }
-
-        return this.performBlockRotation(transform);
+    public AABB rotate(int degreesX, int degreesY) {
+        return this.rotateYZ(degreesX).rotateXZ(degreesY);
     }
 
     @Override
-    public Shape flip(final Rotation.RotationAxis axis) {
+    public AABB rotateYZ(final int degreesX) {
+        return this.performBlockRotation(degreesX, (deg, p) -> switch (deg) {
+            case 90  -> new Vec3d(p.x(), p.z(), 1.0 - p.y());
+            case 180 -> new Vec3d(p.x(), 1.0 - p.y(), 1.0 - p.z());
+            case 270 -> new Vec3d(p.x(), 1.0 - p.z(), p.y());
+            default  -> p;
+        });
+    }
+
+    @Override
+    public AABB rotateXZ(final int degreesY) {
+        return this.performBlockRotation(degreesY, (deg, p) -> switch (deg) {
+            case 90  -> new Vec3d(p.z(), p.y(), 1.0 - p.x());
+            case 180 -> new Vec3d(1.0 - p.x(), p.y(), 1.0 - p.z());
+            case 270 -> new Vec3d(1.0 - p.z(), p.y(), p.x());
+            default  -> p;
+        });
+    }
+
+    @Override
+    public AABB flip(final Rotation.RotationAxis axis) {
         return new AABB(
                 axis.isX() ? 1.0 - this.minX : this.minX,
                 axis.isY() ? 1.0 - this.minY : this.minY,

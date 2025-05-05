@@ -17,6 +17,7 @@ public final class Blocks {
     public static final Block BEDROCK = new Block("bedrock", Shapes.FULL_BLOCK, 1200.0f);
     public static final Block WATER = new Block("water", Shapes.EMPTY_SHAPE, 1200.0f, true);
     public static final Block TRAPDOOR = new Block("trapdoor", Shapes.TRAPDOOR, 0.0f);
+    public static final Block SIDE_TRAPDOOR = new Block("side_trapdoor", Shapes.SIDE_TRAPDOOR, 0.0f);
     public static final Block HANGING_SIGN = new Block("hanging_sign", Shapes.HANGING_SIGN, 0.0f);
     public static final Block SLAB = new Block("slab", Shapes.SLAB, 6.0f);
     public static final Block STAIR = new Block("stair", Shapes.STAIR, 6.0f);
@@ -25,6 +26,7 @@ public final class Blocks {
     public static final Block FLOOR_GRINDSTONE = new Block("floor_grindstone", Shapes.FLOOR_GRINDSTONE, 0.0f);
     public static final Block WALL_GRINDSTONE = new Block("wall_grindstone", Shapes.WALL_GRINDSTONE, 0.0f);
     public static final Block CEILING_GRINDSTONE = new Block("ceiling_grindstone", Shapes.CEILING_GRINDSTONE, 0.0f);
+    public static final Block CEILING_AMETHYST_CLUSTER = new Block("ceiling_amethyst_cluster", Shapes.CEILING_AMETHYST_CLUSTER, 0.0f);
     public static final Block AMETHYST_CLUSTER = new Block("amethyst_cluster", Shapes.AMETHYST_CLUSTER, 0.0f);
     public static final Block LARGE_AMETHYST_BUD = new Block("large_amethyst_bud", Shapes.LARGE_AMETHYST_BUD, 0.0f);
     public static final Block MEDIUM_AMETHYST_BUD = new Block("medium_amethyst_bud", Shapes.MEDIUM_AMETHYST_BUD, 0.0f);

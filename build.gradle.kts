@@ -27,7 +27,7 @@ tasks.test {
 publishing {
     publications {
         create<MavenPublication>("cannonlibrary") {
-            from(components["java"])
+            from(components["shadow"])
         }
     }
 }

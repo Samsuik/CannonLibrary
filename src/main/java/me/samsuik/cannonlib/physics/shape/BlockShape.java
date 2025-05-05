@@ -10,17 +10,15 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public final class BlockShape implements Shape {
-    private final List<Shape> shapes;
-
+public record BlockShape(List<Shape> shapes) implements Shape {
     public static BlockShape single(final Shape shape) {
         return new BlockShape(List.of(shape));
     }
 
-    public BlockShape(final List<Shape> shapes) {
-        this.shapes = shapes;
+    public BlockShape {
+        shapes = Collections.unmodifiableList(shapes);
     }
-    
+
     private BlockShape transformShapes(final Function<Shape, Shape> transform) {
         final List<Shape> transformedShapes = new ArrayList<>();
         for (final Shape shape : this.shapes) {
@@ -31,10 +29,6 @@ public final class BlockShape implements Shape {
 
     private boolean matchAnyShape(final Predicate<Shape> predicate) {
         return this.shapes.stream().anyMatch(predicate);
-    }
-
-    public List<Shape> getShapes() {
-        return Collections.unmodifiableList(this.shapes);
     }
 
     @Override
@@ -80,6 +74,16 @@ public final class BlockShape implements Shape {
     }
 
     @Override
+    public BlockShape rotate(int degreesX, int degreesY) {
+        return this.transformShapes(shape -> this.rotateYZ(degreesX).rotateXZ(degreesY));
+    }
+
+    @Override
+    public BlockShape rotateYZ(final int degrees) {
+        return this.transformShapes(shape -> shape.rotateYZ(degrees));
+    }
+
+    @Override
     public BlockShape rotateXZ(final int degrees) {
         return this.transformShapes(shape -> shape.rotateXZ(degrees));
     }
@@ -122,12 +126,5 @@ public final class BlockShape implements Shape {
             movement = shape.collideZ(entityBB, movement);
         }
         return movement;
-    }
-
-    @Override
-    public String toString() {
-        return "BlockShape{" +
-                "shapes=" + shapes +
-                '}';
     }
 }

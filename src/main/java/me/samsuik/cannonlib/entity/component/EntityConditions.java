@@ -1,8 +1,9 @@
 package me.samsuik.cannonlib.entity.component;
 
-import me.samsuik.cannonlib.world.World;
+import me.samsuik.cannonlib.World;
 import me.samsuik.cannonlib.block.Block;
 import me.samsuik.cannonlib.block.Blocks;
+import me.samsuik.cannonlib.data.DataKey;
 import me.samsuik.cannonlib.entity.Entity;
 import me.samsuik.cannonlib.entity.EntityDataKeys;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
@@ -27,8 +28,8 @@ public final class EntityConditions {
     public static final Predicate<Entity> IS_ON_GROUND = entity -> entity.onGround;
     public static final Predicate<Entity> IS_ALIVE = entity -> !entity.shouldRemove();
     public static final Predicate<Entity> HAS_MOMENTUM = entity -> entity.momentum.magnitudeSquared() > 0.0;
-    public static final Predicate<Entity> HAS_STACKED = entity -> entity.getDataOrDefault(EntityDataKeys.STACKED, true);
-    public static final Predicate<Entity> HAS_EXPLODED = entity -> entity.getDataOrDefault(EntityDataKeys.EXPLODED, false);
+    public static final Predicate<Entity> HAS_STACKED = entity -> entity.hasData(EntityDataKeys.STACKED);
+    public static final Predicate<Entity> HAS_EXPLODED = entity -> entity.hasData(EntityDataKeys.EXPLODED);
 
     public static final Predicate<Entity> CAN_STACK = entity -> {
         if (!entity.onGround) {
@@ -42,14 +43,19 @@ public final class EntityConditions {
             return false;
         }
 
-        // It would be too intensive to look for entity/global collisions to stack on.
-        // As a compromise you have to "opt in" to falling blocks breaking when trying to stack midair.
-        final Block belowBlock = world.getBlockAt(blockPos.add(0, -1, 0));
-        return (belowBlock == null || !belowBlock.replace()) && (presentBlock == null || presentBlock.replace());
+        final Block belowBlock = world.getBlockAt(blockPos.down());
+        return belowBlock != Blocks.AIR && (presentBlock == null || presentBlock.replace());
     };
 
+    public static Predicate<Entity> clipY(final double y) {
+        return clipY(y, 1.0e-7);
+    }
+
     public static Predicate<Entity> clipY(final double y, final double margin) {
-        return above(y - margin);
+        return entity -> {
+            final double pos = entity.position.y();
+            return pos >= y - margin && pos < y;
+        };
     }
 
     public static Predicate<Entity> above(final double y) {
@@ -58,5 +64,17 @@ public final class EntityConditions {
 
     public static Predicate<Entity> hasEntityMoved(final Vec3d position) {
         return entity -> !entity.position.equals(position);
+    }
+
+    public static Predicate<Entity> hasData(final DataKey<?> dataKey) {
+        return entity -> entity.hasData(dataKey);
+    }
+
+    public static Predicate<Entity> isDataTrue(final DataKey<Boolean> dataKey) {
+        return entity -> entity.hasData(dataKey) && entity.getData(dataKey);
+    }
+
+    public static <T> Predicate<Entity> data(final DataKey<T> dataKey, final Predicate<T> more) {
+        return entity -> entity.hasData(dataKey) && more.test(entity.getData(dataKey));
     }
 }
