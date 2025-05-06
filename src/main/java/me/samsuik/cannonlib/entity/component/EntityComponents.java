@@ -101,7 +101,7 @@ public final class EntityComponents {
         return logger(entity -> List.of(name), ex);
     }
 
-    public static Component<Entity> logger(final Function<Entity, List<String>> entityInfo, final Object... ex) {
+    public static Component<Entity> logger(final Function<Entity, List<Object>> entityInfo, final Object... ex) {
         return new LoggerComponent(entityInfo, ex);
     }
 }

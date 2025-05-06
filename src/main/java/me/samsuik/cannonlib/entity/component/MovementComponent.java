@@ -26,6 +26,11 @@ public final class MovementComponent implements SimpleComponent<Entity> {
             relative = movement;
         }
 
+        final double relativeMovementSqr = relative.magnitudeSquared();
+        if (relativeMovementSqr > 1.0e-7 || /* >=1.21.2 */ movement.magnitudeSquared() - relativeMovementSqr < 1.0e-7) {
+            entity.position = entity.position.add(relative);
+        }
+
         final boolean ground;
         if (this.collisions && !movement.equals(relative)) {
             entity.momentum = movement.mul(
@@ -37,9 +42,7 @@ public final class MovementComponent implements SimpleComponent<Entity> {
         } else {
             ground = false;
         }
-
         entity.onGround = ground;
-        entity.position = entity.position.add(relative);
     }
 
     private Vec3d collide(final Entity entity, final Vec3d movement) {
