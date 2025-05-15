@@ -9,6 +9,7 @@ import me.samsuik.cannonlib.entity.EntityDataKeys;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
 import me.samsuik.cannonlib.physics.vec3.Vec3i;
 
+import java.util.Locale;
 import java.util.function.Predicate;
 
 public final class EntityConditions {
@@ -64,6 +65,13 @@ public final class EntityConditions {
 
     public static Predicate<Entity> hasEntityMoved(final Vec3d position) {
         return entity -> !entity.position.equals(position);
+    }
+
+    public static Predicate<Entity> named(final String name) {
+        return entity -> {
+            final String entityName = entity.getDataOrDefault(EntityDataKeys.NAME, "");
+            return entityName.toLowerCase(Locale.ROOT).contains(name);
+        };
     }
 
     public static Predicate<Entity> hasData(final DataKey<?> dataKey) {

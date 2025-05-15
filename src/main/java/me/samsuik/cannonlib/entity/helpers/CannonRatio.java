@@ -8,6 +8,8 @@ import me.samsuik.cannonlib.entity.Entity;
 import me.samsuik.cannonlib.entity.component.EntityComponents;
 import me.samsuik.cannonlib.entity.component.EntityConditions;
 import me.samsuik.cannonlib.entity.EntityDataKeys;
+import me.samsuik.cannonlib.explosion.ExplosionFlags;
+import me.samsuik.cannonlib.physics.shape.Shapes;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +27,31 @@ public final class CannonRatio {
     private static final Pattern CLEAN_UP_PATTERN = Pattern.compile("^(?:#|//).*$|\\([^0-9].*?\\)|/\\s*\\d+|[,/+<>]|(?:Amount|Tick):? *[A-z]+", Pattern.CASE_INSENSITIVE);
     private static final Pattern NAME_PATTERN = Pattern.compile("^((?: ?\\w+)+).*", Pattern.CASE_INSENSITIVE);
     private static final Pattern EXTRACT_RATIO_PATTERN = Pattern.compile("(?:Tick:? *|^\\s*)(?<tick>[\\d.]+)-?|(?:Amount:? *|\\()(?<amount>\\d+)?\\)?-?", Pattern.CASE_INSENSITIVE);
+
+    public static World createWorldWithRatio(
+            final String ratioString,
+            final boolean useGameTicks,
+            final int guider,
+            final List<Component<Entity>> extraComponents
+    ) {
+        final World world = new World();
+        // create a floor, guider and wall
+        world.addGlobalCollision(Shapes.floor(-64));
+        world.addGlobalCollision(Shapes.block(0, guider, 0).expandTo(new Vec3d(-64, 400, 0)));
+        world.addGlobalCollision(Shapes.plane(64, 0, 0));
+
+        loadRatioIntoWorld(
+                ratioString,
+                world,
+                Vec3d.center(0, -63, 0),
+                useGameTicks,
+                ExplosionFlags.HANDLE_BLOCKS,
+                Map.of(),
+                extraComponents
+        );
+
+        return world;
+    }
 
     public static void loadRatioIntoWorld(
             final String ratioString,
@@ -117,7 +144,7 @@ public final class CannonRatio {
     private record RatioEntityData(String name, Vec3d position, double tick, int amount, boolean power, boolean sand) {
         public Entity createEntity(final boolean useGameTicks, final int explosionFlags, final List<Component<Entity>> extraComponents) {
             final List<Component<Entity>> components = new ArrayList<>();
-            components.add(EntityComponents.data(EntityDataKeys.NAME, this.name));
+            components.add(EntityComponents.spawnWithData(EntityDataKeys.NAME, this.name));
 
             // Letting the power tick (and as a result swing) might create unexpected behaviour.
             if (!this.power()) {

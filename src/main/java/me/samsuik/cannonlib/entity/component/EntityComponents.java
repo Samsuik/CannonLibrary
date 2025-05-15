@@ -4,12 +4,12 @@ import me.samsuik.cannonlib.World;
 import me.samsuik.cannonlib.block.Block;
 import me.samsuik.cannonlib.block.Blocks;
 import me.samsuik.cannonlib.component.Component;
-import me.samsuik.cannonlib.component.Components;
 import me.samsuik.cannonlib.component.SimpleComponent;
 import me.samsuik.cannonlib.entity.Entity;
 import me.samsuik.cannonlib.data.DataKey;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -29,7 +29,11 @@ public final class EntityComponents {
     public static final Component<Entity> REMOVE_AFTER_80_TICKS = removeAtTick(80);
     public static final Component<Entity> ENTITY_TICK_WITH_COLLISION = tick(true, 80);
     public static final Component<Entity> ENTITY_TICK_WITHOUT_COLLISION = tick(false, 80);
-    public static final Component<Entity> LOGGER = logger("");
+    public static final Component<Entity> LOGGER = entityLogger("");
+
+    public static HammerRatioComponent calculateHammerRatio() {
+        return new HammerRatioComponent();
+    }
 
     public static SimpleComponent<Entity> removeEntities() {
         return Component.user(entity -> {
@@ -93,15 +97,27 @@ public final class EntityComponents {
         return Component.wrap(List.of(GRAVITY, movement, FRICTION, DRAG, removal));
     }
 
-    public static <T> Component<Entity> data(final DataKey<T> key, final T obj) {
+    public static <T> Component<Entity> spawnWithData(final DataKey<T> key, final T obj) {
         return Component.<Entity>user(entity -> entity.putData(key, obj)).atTick(0);
     }
 
-    public static Component<Entity> logger(final String name, final Object... ex) {
-        return logger(entity -> List.of(name), ex);
+    public static <T> Component<Entity> data(final DataKey<T> key, final Function<Entity, T> func) {
+        return Component.user(entity -> entity.putData(key, func.apply(entity)));
+    }
+
+    public static Component<Entity> entityLogger(final String name, final Object... ex) {
+        return entityLogger(entity -> List.of(name), ex);
+    }
+
+    public static Component<Entity> entityLogger(final Function<Entity, List<Object>> entityInfo, final Object... ex) {
+        return new LoggerComponent(entityInfo, Arrays.asList(ex), true);
+    }
+
+    public static Component<Entity> logger(final Object... ex) {
+        return logger(entity -> List.of(), ex);
     }
 
     public static Component<Entity> logger(final Function<Entity, List<Object>> entityInfo, final Object... ex) {
-        return new LoggerComponent(entityInfo, ex);
+        return new LoggerComponent(entityInfo, Arrays.asList(ex), false);
     }
 }

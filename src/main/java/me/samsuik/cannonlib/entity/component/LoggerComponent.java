@@ -13,11 +13,13 @@ import java.util.function.Function;
 public final class LoggerComponent implements SimpleComponent<Entity> {
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggerComponent.class);
     private final Function<Entity, List<Object>> entityInfo;
-    private final Object[] extraInfo;
+    private final List<Object> extraInfo;
+    private final boolean includeEntityState;
 
-    public LoggerComponent(final Function<Entity, List<Object>> entityInfo, final Object... extraInfo) {
+    public LoggerComponent(final Function<Entity, List<Object>> entityInfo, final List<Object> extraInfo, final boolean includeEntityState) {
         this.entityInfo = entityInfo;
         this.extraInfo = extraInfo;
+        this.includeEntityState = includeEntityState;
     }
 
     @Override
@@ -25,17 +27,26 @@ public final class LoggerComponent implements SimpleComponent<Entity> {
         final List<String> suffix = new ArrayList<>();
         final List<Object> entityInfoList = this.entityInfo.apply(entity);
         for (int in = 1; in < entityInfoList.size(); ++in) {
-            suffix.add(entityInfoList.get(in).toString());
+            suffix.add(String.valueOf(entityInfoList.get(in)));
         }
         for (final Object ex : extraInfo) {
             suffix.add(String.valueOf(ex));
         }
-        final String extraString = String.join(" ", suffix);
-        final String suffixString = extraString.isEmpty() ? "" : "(%s)".formatted(extraString);
 
-        final String name = !entityInfoList.isEmpty() ? entityInfoList.getFirst().toString() : "";
-        final Vec3d pos = entity.position;
-        final Vec3d mot = entity.momentum;
-        LOGGER.info("{}{}: {} {} {} {} {} {} {}", tick, name, pos.x(), pos.y(), pos.z(), mot.x(), mot.y(), mot.z(), suffixString);
+        final String extraString = String.join(" ", suffix);
+        final String suffixString;
+        final String entityState;
+        if (this.includeEntityState) {
+            final Vec3d pos = entity.position;
+            final Vec3d mot = entity.momentum;
+            entityState = "%s %s %s %s %s %s ".formatted(pos.x(), pos.y(), pos.z(), mot.x(), mot.y(), mot.z());
+            suffixString = extraString.isEmpty() ? "" : "(%s)".formatted(extraString);
+        } else {
+            entityState = "";
+            suffixString = extraString;
+        }
+
+        final String name = !entityInfoList.isEmpty() ? String.valueOf(entityInfoList.getFirst()) : "";
+        LOGGER.info("{}{}: {}{}", tick, name, entityState, suffixString);
     }
 }
