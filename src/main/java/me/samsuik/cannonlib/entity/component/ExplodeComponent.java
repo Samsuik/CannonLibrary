@@ -28,6 +28,9 @@ public final class ExplodeComponent implements Component<Entity> {
             return false;
         }
 
+        entity.putData(EntityDataKeys.EXPLODED, COUNTER.getAndIncrement());
+        entity.remove();
+
         final World world = entity.getWorld();
         final Obstruction obstruction = new Obstruction();
         for (int remaining = this.amount - 1; remaining >= 0; --remaining) {
@@ -56,8 +59,6 @@ public final class ExplodeComponent implements Component<Entity> {
             }
         }
 
-        entity.putData(EntityDataKeys.EXPLODED, COUNTER.getAndIncrement());
-        entity.remove();
         return true;
     }
 }

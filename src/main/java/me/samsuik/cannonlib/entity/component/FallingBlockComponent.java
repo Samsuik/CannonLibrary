@@ -24,6 +24,9 @@ public final class FallingBlockComponent implements Component<Entity> {
             return false;
         }
 
+        entity.putData(EntityDataKeys.STACKED, COUNTER.getAndIncrement());
+        entity.remove();
+
         for (int count = 0; count < this.amount; ++count) {
             if (count != 0 || entity.hasData(EntityDataKeys.REPEAT)) {
                 entity.getEntityState().apply(entity);
@@ -48,8 +51,6 @@ public final class FallingBlockComponent implements Component<Entity> {
             }
         }
 
-        entity.putData(EntityDataKeys.STACKED, COUNTER.getAndIncrement());
-        entity.remove();
         return true;
     }
 }

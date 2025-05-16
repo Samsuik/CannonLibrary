@@ -2,6 +2,7 @@ package me.samsuik.cannonlib.entity.component;
 
 import me.samsuik.cannonlib.component.SimpleComponent;
 import me.samsuik.cannonlib.entity.Entity;
+import me.samsuik.cannonlib.entity.EntityDataKeys;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

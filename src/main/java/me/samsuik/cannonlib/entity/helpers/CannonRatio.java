@@ -23,7 +23,7 @@ public final class CannonRatio {
 
     private static final int DEFAULT_POWER_TNT = 768;
     private static final Pattern POWER_PATTERN = Pattern.compile("power|p\\d+");
-    private static final Pattern RESTACK_PATTERN = Pattern.compile("osrb|restack");
+    private static final Pattern RESTACK_PATTERN = Pattern.compile("osrb|restack", Pattern.CASE_INSENSITIVE);
     private static final Pattern CLEAN_UP_PATTERN = Pattern.compile("^(?:#|//).*$|\\([^0-9].*?\\)|/\\s*\\d+|[,/+<>]|(?:Amount|Tick):? *[A-z]+", Pattern.CASE_INSENSITIVE);
     private static final Pattern NAME_PATTERN = Pattern.compile("^((?: ?\\w+)+).*", Pattern.CASE_INSENSITIVE);
     private static final Pattern EXTRACT_RATIO_PATTERN = Pattern.compile("(?:Tick:? *|^\\s*)(?<tick>[\\d.]+)-?|(?:Amount:? *|\\()(?<amount>\\d+)?\\)?-?", Pattern.CASE_INSENSITIVE);
@@ -156,7 +156,6 @@ public final class CannonRatio {
             }
 
             // Add extra components before the fb/explode component so the position and motion are accurate
-            // This does cause STACKED and EXPLODE data to not work correctly.
             components.addAll(extraComponents);
 
             if (this.sand()) {

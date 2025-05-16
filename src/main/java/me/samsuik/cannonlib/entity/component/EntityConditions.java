@@ -16,8 +16,8 @@ public final class EntityConditions {
     public static final Predicate<Entity> HAS_FLOATING_POINT_ISSUES = entity -> {
         // [4, 5, 6] are problematic exponents
         final double position = entity.position.y();
-        for (int exponent = 16; exponent <= 64; exponent *= 2) {
-            final double blockCoord = exponent - 1;
+        for (int exponent = 4; exponent <= 6; ++exponent) {
+            final double blockCoord = (1 << exponent) - 1;
             final double movement = position + (-blockCoord - position);
             if ((movement + blockCoord) < 0.0) {
                 return true;

@@ -7,6 +7,7 @@ import me.samsuik.cannonlib.component.Component;
 import me.samsuik.cannonlib.component.SimpleComponent;
 import me.samsuik.cannonlib.entity.Entity;
 import me.samsuik.cannonlib.data.DataKey;
+import me.samsuik.cannonlib.entity.EntityDataKeys;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,10 +30,14 @@ public final class EntityComponents {
     public static final Component<Entity> REMOVE_AFTER_80_TICKS = removeAtTick(80);
     public static final Component<Entity> ENTITY_TICK_WITH_COLLISION = tick(true, 80);
     public static final Component<Entity> ENTITY_TICK_WITHOUT_COLLISION = tick(false, 80);
-    public static final Component<Entity> LOGGER = entityLogger("");
+    public static final Component<Entity> LOGGER = entityLogger(entity -> List.of(entity.getDataOrDefault(EntityDataKeys.NAME, "")));
 
-    public static HammerRatioComponent calculateHammerRatio() {
-        return new HammerRatioComponent();
+    public static HammerRatioComponent hammerRatio() {
+        return hammerRatio(100);
+    }
+
+    public static HammerRatioComponent hammerRatio(final int hammerTnt) {
+        return new HammerRatioComponent(hammerTnt);
     }
 
     public static SimpleComponent<Entity> removeEntities() {
@@ -95,6 +100,20 @@ public final class EntityComponents {
         final Component<Entity> movement = collision ? MOVE_ENTITY_WITH_COLLISION : MOVE_ENTITY_WITHOUT_COLLISION;
         final Component<Entity> removal = removeAfter != 80 ? removeAtTick(removeAfter) : REMOVE_AFTER_80_TICKS;
         return Component.wrap(List.of(GRAVITY, movement, FRICTION, DRAG, removal));
+    }
+
+    public static Component<Entity> tickTnt(final boolean collision, final int fuse, final int amount) {
+        final Component<Entity> tick = collision ? ENTITY_TICK_WITH_COLLISION : ENTITY_TICK_WITHOUT_COLLISION;
+        return Component.wrap(List.of(tick, explode(fuse, amount)));
+    }
+
+    public static Component<Entity> tickFallingBlock(final boolean collision, final Block type, final int amount) {
+        final Component<Entity> tick = collision ? ENTITY_TICK_WITH_COLLISION : ENTITY_TICK_WITHOUT_COLLISION;
+        return Component.wrap(List.of(tick, fallingBlock(type, amount)));
+    }
+
+    public static Component<Entity> name(final String entityName) {
+        return spawnWithData(EntityDataKeys.NAME, entityName);
     }
 
     public static <T> Component<Entity> spawnWithData(final DataKey<T> key, final T obj) {

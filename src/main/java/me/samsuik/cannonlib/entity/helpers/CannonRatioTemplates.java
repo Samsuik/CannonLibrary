@@ -1,7 +1,7 @@
 package me.samsuik.cannonlib.entity.helpers;
 
 public final class CannonRatioTemplates {
-    public static final String MADMANS_SCATTER = """
+    public static final String UNIVERSAL_SCATTER = """
                         scatter-1 tick: 40 (20)
                         scatter-2 tick: 55 (20)
                         scatter-3 tick: 70 (20)
