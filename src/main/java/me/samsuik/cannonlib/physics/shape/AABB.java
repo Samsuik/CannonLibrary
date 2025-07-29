@@ -5,9 +5,7 @@ import me.samsuik.cannonlib.physics.vec3.Vec3;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public final class AABB implements Shape {
     public final double minX;

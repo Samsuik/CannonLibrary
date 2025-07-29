@@ -24,7 +24,6 @@ public final class FallingBlockComponent implements Component<Entity> {
             return false;
         }
 
-        entity.putData(EntityDataKeys.STACKED, COUNTER.getAndIncrement());
         entity.remove();
 
         for (int count = 0; count < this.amount; ++count) {
@@ -45,6 +44,7 @@ public final class FallingBlockComponent implements Component<Entity> {
             // As an optimisation falling blocks will only break if the block below is air
             final Block belowBlock = world.getBlockAt(blockPos.down());
             if (belowBlock != Blocks.AIR && (presentBlock == null || presentBlock.replace())) {
+                entity.putData(EntityDataKeys.STACKED, COUNTER.getAndIncrement());
                 world.setBlock(blockPos, block);
             } else {
                 break;

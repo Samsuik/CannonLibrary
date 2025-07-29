@@ -10,19 +10,17 @@ public final class CannonRatioTemplates {
                         """;
 
     public static String simple1RevRatio(
-            final int hammerPower,
-            final int oneRev,
+            final int powerTicks,
+            final int oneRevTicks,
             final int hammerTicks,
-            final int hammerAmount,
-            final boolean gameTicks
+            final int hammerAmount
     ) {
-        final int mul = gameTicks ? 1 : 2;
         return """
                sand power tick: 0
                sand tick: 100 (384)
                1rev tick: %s
                hammer power tick: %s
                hammer tick: %s (%s)
-               """.formatted(oneRev * mul, hammerPower * mul, hammerTicks * mul, hammerAmount * mul);
+               """.formatted(oneRevTicks, powerTicks, hammerTicks, hammerAmount);
     }
 }
