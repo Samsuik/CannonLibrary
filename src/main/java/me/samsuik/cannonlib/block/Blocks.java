@@ -12,6 +12,7 @@ public final class Blocks {
     public static final Block COBBLESTONE = Block.from("cobblestone", Shapes.FULL_BLOCK, 6.0f);
     public static final Block END_STONE = Block.from("end_stone", Shapes.FULL_BLOCK, 9.0f);
     public static final Block STONE = Block.from("stone", Shapes.FULL_BLOCK, 6.0f);
+    public static final Block OBSIDIAN = Block.from("obsidian", Shapes.FULL_BLOCK, 1200.0f);
     public static final Block SAND = Block.builder()
             .name("sand")
             .shape(Shapes.FULL_BLOCK)
