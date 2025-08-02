@@ -36,16 +36,16 @@ public final class FallingBlockComponent implements Component<Entity> {
 
             final World world = entity.getWorld();
             final Vec3i blockPos = entity.position.toVec3i();
-            final Block presentBlock = world.getBlockAt(blockPos);
+            final Block presentBlock = world.getBlockAtRaw(blockPos);
             if (presentBlock == Blocks.MOVING_PISTON) {
                 return false;
             }
 
             // As an optimisation falling blocks will only break if the block below is air
-            final Block belowBlock = world.getBlockAt(blockPos.down());
+            final Block belowBlock = world.getBlockAtRaw(blockPos.down());
             if (belowBlock != Blocks.AIR && (presentBlock == null || presentBlock.replace())) {
                 entity.putData(EntityDataKeys.STACKED, COUNTER.getAndIncrement());
-                world.setBlock(blockPos, block);
+                world.setBlock(blockPos, this.block);
             } else {
                 break;
             }

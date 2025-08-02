@@ -1,7 +1,9 @@
 package me.samsuik.cannonlib;
 
 import me.samsuik.cannonlib.block.Block;
+import me.samsuik.cannonlib.block.Blocks;
 import me.samsuik.cannonlib.entity.Entity;
+import me.samsuik.cannonlib.physics.Rotation;
 import me.samsuik.cannonlib.physics.shape.Shape;
 import me.samsuik.cannonlib.physics.shape.Shapes;
 import me.samsuik.cannonlib.physics.vec3.Vec3i;
@@ -15,12 +17,19 @@ public final class World {
     private final Map<Vec3i, Shape> blockShapes = new HashMap<>();
     private final List<Shape> blockCollisions = new ArrayList<>();
     private final List<Shape> globalCollisions = new ArrayList<>();
+    private final ScheduledBlockTicks blockTicks = new ScheduledBlockTicks();
+    private boolean blockUpdates = false;
+
+    public void doBlockPhysics(boolean physics) {
+        this.blockUpdates = physics;
+    }
 
     public boolean hasEntities() {
         return !this.entityList.isEmpty();
     }
 
     public void tick() {
+        this.blockTicks.tick(this);
         this.entityList.setTicking(true);
         for (final Entity entity : this.entityList) {
             if (!entity.shouldRemove()) {
@@ -61,6 +70,11 @@ public final class World {
     }
 
     public Block getBlockAt(final Vec3i position) {
+        final Block block = this.getBlockAtRaw(position);
+        return block == null ? Blocks.AIR : block;
+    }
+
+    public Block getBlockAtRaw(final Vec3i position) {
         return this.blocks.get(position);
     }
 
@@ -91,6 +105,32 @@ public final class World {
                 }
             }
             this.blocks.put(position, block);
+        }
+
+        if (this.blockUpdates) {
+            this.updateBlocksAroundPos(position, block);
+        }
+    }
+
+    public void updateBlocksAroundPos(final Vec3i position, final Block block) {
+        for (final Rotation rotation : Rotation.values()) {
+            final Vec3i neighbor = position.move(rotation);
+            final Block neighborBlock = this.getBlockAtRaw(neighbor);
+
+            if (neighborBlock != null) {
+                this.blockUpdate(neighbor, neighborBlock);
+            }
+        }
+
+        if (block != null) {
+            this.blockUpdate(position, block);
+        }
+    }
+
+    public void blockUpdate(final Vec3i position, final Block block) {
+        final int ticks = block.interaction().onBlockUpdate(this, position, block);
+        if (ticks > 0) {
+            this.blockTicks.scheduleBlockTick(ticks - 1, position, block);
         }
     }
 

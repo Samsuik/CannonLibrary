@@ -9,8 +9,9 @@ public final class Shapes {
     public static final BlockShape FULL_BLOCK = BlockShape.single(block(0, 0, 0));
     public static final BlockShape LADDER = BlockShape.single(Shapes.box(0.0, 0.0, 0.0, 16.0, 16.0, 3.0));
     public static final BlockShape HANGING_SIGN = BlockShape.single(Shapes.column(16.0, 4.0, 14.0, 16.0));
-    public static final BlockShape TRAPDOOR = BlockShape.single(Shapes.column(16.0, 16.0, 13.0, 16.0));
-    public static final BlockShape SIDE_TRAPDOOR = TRAPDOOR.rotate(90, 0);
+    public static final BlockShape TOP_TRAPDOOR = BlockShape.single(Shapes.column(16.0, 16.0, 13.0, 16.0));
+    public static final BlockShape BOTTOM_TRAPDOOR = BlockShape.single(Shapes.column(16.0, 16.0, 0, 3.0));
+    public static final BlockShape SIDE_TRAPDOOR = TOP_TRAPDOOR.rotate(90, 0);
     public static final BlockShape SLAB = BlockShape.single(Shapes.column(16.0, 16.0, 0.0, 8.0));
     public static final BlockShape STAIR = new BlockShape(List.of(
             Shapes.column(16.0, 16.0, 0.0, 8.0),

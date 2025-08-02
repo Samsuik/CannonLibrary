@@ -68,7 +68,7 @@ public final class ClippingBlocks {
                 final Vec3i blockPosY = guiderPos.setY(guiderPos.y() - 1);
                 final Vec3i wallPos = blockPosY.move(rotation);
     
-                wallBlocks.put(wallPos, world.getBlockAt(wallPos));
+                wallBlocks.put(wallPos, world.getBlockAtRaw(wallPos));
             }
         }
 
@@ -107,7 +107,7 @@ public final class ClippingBlocks {
 
             boolean destroyedWall = false;
             for (final Map.Entry<Vec3i, Block> entry : wallBlocks.entrySet()) {
-                if (snapshot.getBlockAt(entry.getKey()) != entry.getValue()) {
+                if (snapshot.getBlockAtRaw(entry.getKey()) != entry.getValue()) {
                     destroyedWall = true;
                 }
             }

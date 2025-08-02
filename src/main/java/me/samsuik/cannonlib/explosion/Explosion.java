@@ -12,8 +12,10 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class Explosion {
+    private static final double EXPLOSION_POSITION_OFFSET = 0.98f * 0.0625;
+
     public static Vec3d explosionPosition(final Vec3d position) {
-        return position.add(0.0, 0.98f * 0.0625, 0.0);
+        return position.add(0.0, EXPLOSION_POSITION_OFFSET, 0.0);
     }
 
     private static Set<Vec3i> calculateExplodedPositions(final World world, final Vec3d explosionPosition, final int flags) {

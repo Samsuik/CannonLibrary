@@ -142,7 +142,7 @@ public final class Obstruction {
 
         for (;;) {
             final Vec3i blockPos = new Vec3i(currX, currY, currZ);
-            final Block block = world.getBlockAt(blockPos);
+            final Block block = world.getBlockAtRaw(blockPos);
 
             if (block != null && block.shape().clipBlock(from, to, blockPos)) {
                 return true;
