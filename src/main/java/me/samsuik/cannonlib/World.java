@@ -20,7 +20,7 @@ public final class World {
     private final ScheduledBlockTicks blockTicks = new ScheduledBlockTicks();
     private boolean blockUpdates = false;
 
-    public void doBlockPhysics(boolean physics) {
+    public void doBlockPhysics(final boolean physics) {
         this.blockUpdates = physics;
     }
 

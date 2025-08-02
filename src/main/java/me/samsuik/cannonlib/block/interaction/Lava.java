@@ -37,7 +37,7 @@ public final class Lava implements FluidInteraction {
         if (blockBelow == null || blockBelow.replace() && !blockBelow.has(this)) {
             final boolean solidify = blockBelow == Blocks.WATER || blockBelow == Blocks.WATER_SOURCE;
             world.setBlock(blockPosBelow, solidify ? Blocks.STONE : Blocks.LAVA);
-        } else if (block == Blocks.WATER_SOURCE || blockBelow.replace() && !blockBelow.has(this)) {
+        } else if (block == Blocks.WATER_SOURCE || !blockBelow.replace()) {
             for (final Rotation rotation : Rotation.values()) {
                 if (rotation.getAxis().isY()) {
                     continue;

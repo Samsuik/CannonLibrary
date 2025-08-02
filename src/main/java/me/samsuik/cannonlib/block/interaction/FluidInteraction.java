@@ -7,7 +7,7 @@ import me.samsuik.cannonlib.physics.Rotation;
 import me.samsuik.cannonlib.physics.vec3.Vec3i;
 
 public interface FluidInteraction extends Interaction {
-    public default boolean drain(final World world, final Vec3i position) {
+    default boolean drain(final World world, final Vec3i position) {
         for (final Rotation rotation : Rotation.values()) {
             if (rotation == Rotation.DOWN) {
                 continue;

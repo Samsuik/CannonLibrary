@@ -56,13 +56,13 @@ public final class Blocks {
     public static final Block LAVA_SOURCE = Block.builder()
             .name("lava_source")
             .strength(1200.0f)
-            // todo: interaction with water
+            .interaction(BlockInteractions.LAVA)
             .replace()
             .build();
     public static final Block LAVA = Block.builder()
             .name("lava")
             .strength(1200.0f)
-            // todo: interaction with water
+            .interaction(BlockInteractions.LAVA)
             .replace()
             .build();
     public static final Block TOP_TRAPDOOR = Block.from("top_trapdoor", Shapes.TOP_TRAPDOOR, 0.0f);
