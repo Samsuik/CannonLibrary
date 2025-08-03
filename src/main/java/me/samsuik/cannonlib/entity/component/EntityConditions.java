@@ -3,6 +3,7 @@ package me.samsuik.cannonlib.entity.component;
 import me.samsuik.cannonlib.World;
 import me.samsuik.cannonlib.block.Block;
 import me.samsuik.cannonlib.block.Blocks;
+import me.samsuik.cannonlib.block.interaction.BlockInteractions;
 import me.samsuik.cannonlib.data.DataKey;
 import me.samsuik.cannonlib.entity.Entity;
 import me.samsuik.cannonlib.entity.EntityDataKeys;
@@ -31,22 +32,29 @@ public final class EntityConditions {
     public static final Predicate<Entity> HAS_MOMENTUM = entity -> entity.momentum.magnitudeSquared() > 0.0;
     public static final Predicate<Entity> HAS_STACKED = entity -> entity.hasData(EntityDataKeys.STACKED);
     public static final Predicate<Entity> HAS_EXPLODED = entity -> entity.hasData(EntityDataKeys.EXPLODED);
+    public static final Predicate<Entity> CAN_STACK = canStack(Blocks.SAND);
 
-    public static final Predicate<Entity> CAN_STACK = entity -> {
-        if (!entity.onGround) {
-            return false;
-        }
+    public static Predicate<Entity> canStack(final Block block) {
+        return entity -> {
+            if (!entity.onGround) {
+                return false;
+            }
 
-        final World world = entity.getWorld();
-        final Vec3i blockPos = entity.position.toVec3i();
-        final Block presentBlock = world.getBlockAtRaw(blockPos);
-        if (presentBlock == Blocks.MOVING_PISTON) {
-            return false;
-        }
+            final World world = entity.getWorld();
+            final Vec3i blockPos = entity.position.toVec3i();
+            final Block presentBlock = world.getBlockAtRaw(blockPos);
+            if (presentBlock == Blocks.MOVING_PISTON) {
+                return false;
+            }
 
-        final Block belowBlock = world.getBlockAtRaw(blockPos.down());
-        return belowBlock != Blocks.AIR && (presentBlock == null || presentBlock.replace());
-    };
+            if (block.has(BlockInteractions.CONCRETE_POWDER) && presentBlock.has(BlockInteractions.WATER)) {
+                return true;
+            }
+
+            final Block belowBlock = world.getBlockAtRaw(blockPos.down());
+            return belowBlock != Blocks.AIR && (presentBlock == null || presentBlock.replace());
+        };
+    }
 
     public static Predicate<Entity> clipY(final double y) {
         return clipY(y, 1.0e-7);

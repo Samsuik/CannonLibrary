@@ -3,6 +3,7 @@ package me.samsuik.cannonlib.entity.component;
 import me.samsuik.cannonlib.World;
 import me.samsuik.cannonlib.block.Block;
 import me.samsuik.cannonlib.block.Blocks;
+import me.samsuik.cannonlib.block.interaction.BlockInteractions;
 import me.samsuik.cannonlib.component.Component;
 import me.samsuik.cannonlib.entity.Entity;
 import me.samsuik.cannonlib.entity.EntityDataKeys;
@@ -12,10 +13,12 @@ public final class FallingBlockComponent implements Component<Entity> {
     private static final ThreadLocal<Boolean> TICKING = ThreadLocal.withInitial(() -> false);
     private final Block block;
     private final int amount;
+    private final boolean concrete;
 
     public FallingBlockComponent(final Block block, final int amount) {
         this.block = block;
         this.amount = amount;
+        this.concrete = block.has(BlockInteractions.CONCRETE_POWDER);
     }
 
     @Override
@@ -41,16 +44,34 @@ public final class FallingBlockComponent implements Component<Entity> {
                 return false;
             }
 
-            // As an optimisation falling blocks will only break if the block below is air
-            final Block belowBlock = world.getBlockAtRaw(blockPos.down());
-            if (belowBlock != Blocks.AIR && (presentBlock == null || presentBlock.replace())) {
-                entity.putData(EntityDataKeys.STACKED, COUNTER.getAndIncrement());
-                world.setBlock(blockPos, this.block);
-            } else {
+            final Block stack = this.blockToStack(world, blockPos, presentBlock);
+            if (stack == null) {
                 break;
+            } else {
+                entity.putData(EntityDataKeys.STACKED, COUNTER.getAndIncrement());
+                world.setBlock(blockPos, stack);
             }
         }
 
         return true;
+    }
+
+    private Block blockToStack(
+            final World world,
+            final Vec3i blockPos,
+            final Block presentBlock
+    ) {
+        // Concrete solidifies when in contact with water
+        if (this.concrete && presentBlock.has(BlockInteractions.WATER)) {
+            return Blocks.CONCRETE;
+        }
+
+        // As an optimisation falling blocks will only break if the block below is air
+        final Block belowBlock = world.getBlockAtRaw(blockPos.down());
+        if (belowBlock != Blocks.AIR && (presentBlock == null || presentBlock.replace())) {
+            return this.block;
+        }
+
+        return null;
     }
 }
