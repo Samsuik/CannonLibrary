@@ -35,6 +35,12 @@ public final class ScheduledBlockTicks {
         this.blocksToTicks.get(tick).scheduleBlockTick(scheduledBlock);
     }
 
+    public void copy(final ScheduledBlockTicks blockTicks) {
+        for (final BlocksToTick blocksToTick : this.blocksToTicks) {
+            blockTicks.blocksToTicks.add(blocksToTick.copy());
+        }
+    }
+
     private static class BlocksToTick {
         private final List<ScheduledBlock> scheduled = new ArrayList<>();
         private final Set<Vec3i> positions = new HashSet<>();
@@ -43,6 +49,13 @@ public final class ScheduledBlockTicks {
             if (this.positions.add(scheduledBlock.position())) {
                 this.scheduled.add(scheduledBlock);
             }
+        }
+
+        public BlocksToTick copy() {
+            final BlocksToTick blocksToTick = new BlocksToTick();
+            blocksToTick.scheduled.addAll(this.scheduled);
+            blocksToTick.positions.addAll(this.positions);
+            return blocksToTick;
         }
     }
 

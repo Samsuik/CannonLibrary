@@ -12,7 +12,7 @@ import me.samsuik.cannonlib.physics.vec3.Vec3i;
 public final class Simple384Stacker {
     public static void main(String[] args) {
         final World world = new World();
-        world.addGlobalCollision(Shapes.floor(-64));
+        world.floor(-64);
 
         // wall
         for (int y = -64; y < 320; ++y) {

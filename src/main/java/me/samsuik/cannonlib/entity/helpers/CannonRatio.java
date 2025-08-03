@@ -25,8 +25,8 @@ public final class CannonRatio {
     private static final Pattern POWER_PATTERN = Pattern.compile("power|p\\d+");
     private static final Pattern RESTACK_PATTERN = Pattern.compile("osrb|restack", Pattern.CASE_INSENSITIVE);
     private static final Pattern CLEAN_UP_PATTERN = Pattern.compile("^(?:#|//).*$|\\([^0-9].*?\\)|/\\s*\\d+|[,/+<>]|(?:Amount|Tick):? *[A-z]+", Pattern.CASE_INSENSITIVE);
-    private static final Pattern NAME_PATTERN = Pattern.compile("^((?: ?\\w+)+).*", Pattern.CASE_INSENSITIVE);
-    private static final Pattern EXTRACT_RATIO_PATTERN = Pattern.compile("(?:Tick:? *|^\\s*)(?<tick>[\\d.]+)\b-?|(?:Amount:? *|\\()(?<amount>\\d+)?\\)?-?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern NAME_PATTERN = Pattern.compile("^(?:[\\d.]+\\s)?((?: ?\\w+)+).*", Pattern.CASE_INSENSITIVE);
+    private static final Pattern EXTRACT_RATIO_PATTERN = Pattern.compile("(?:Tick:? *|^\\s*)(?<tick>[\\d.]+)\\b-?|(?:Amount:? *|\\()(?<amount>\\d+)?\\)?-?", Pattern.CASE_INSENSITIVE);
 
     public static World createWorldWithRatio(
             final String ratioString,
@@ -73,6 +73,8 @@ public final class CannonRatio {
             final RatioEntityData ratioEntityData = readEntityData(line, powerOffset, position, offsets);
             if (ratioEntityData != null) {
                 sortedRatioEntityData.add(ratioEntityData);
+            } else {
+                LOGGER.debug("? malformed {}", ratioString);
             }
         }
 

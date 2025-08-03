@@ -7,7 +7,7 @@ public final class ExplosionFlags {
     public static final int ENTITIES_UP_TO_COUNT = 0b0001000;
     public static final int SINGLE_IMPACT        = 0b0010000;
     public static final int PAPER_OPTIMISE_EXP   = 0b0100000;
-    public static final int DISABLE_PARITY       = 0b1000000;
+    //public static final int DISABLE_PARITY       = 0b1000000;
     public static final int HANDLE_BLOCKS        = DESTROY_BLOCKS | OBSTRUCTION;
     public static final int BATCH_SWINGING       = ENTITIES_UP_TO_COUNT | SINGLE_IMPACT;
 

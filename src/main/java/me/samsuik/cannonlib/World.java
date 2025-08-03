@@ -6,6 +6,7 @@ import me.samsuik.cannonlib.entity.Entity;
 import me.samsuik.cannonlib.physics.Rotation;
 import me.samsuik.cannonlib.physics.shape.Shape;
 import me.samsuik.cannonlib.physics.shape.Shapes;
+import me.samsuik.cannonlib.physics.vec3.Vec3d;
 import me.samsuik.cannonlib.physics.vec3.Vec3i;
 
 import java.util.*;
@@ -140,6 +141,21 @@ public final class World {
         this.blockCollisions.clear();
     }
 
+    public void floor(final int level) {
+        this.addGlobalCollision(Shapes.floor(level));
+    }
+
+    public void border(final int size) {
+        final Vec3d xyz = new Vec3d(size, size, size);
+        for (final Rotation rotation : Rotation.values()) {
+            this.addGlobalCollision(Shapes.plane(
+                    xyz.mul(rotation.getDirection()).x(),
+                    xyz.mul(rotation.getDirection()).y(),
+                    xyz.mul(rotation.getDirection()).z()
+            ));
+        }
+    }
+
     public void addGlobalCollision(final Shape collision) {
         this.globalCollisions.add(collision);
     }
@@ -163,9 +179,13 @@ public final class World {
     public World snapshot() {
         final World world = new World();
 
+        // deep copy all entities
         for (final Entity entity : this.entityList) {
             world.addEntity(entity.copy());
         }
+
+        // copy all scheduled blocks
+        world.blockTicks.copy(this.blockTicks);
 
         // Shapes and blocks are immutable
         world.blocks.putAll(this.blocks);

@@ -14,28 +14,30 @@ import java.util.*;
 public final class ClippingBlocks {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClippingBlocks.class);
     private static final List<Block> CLIP_BLOCKS = List.of(Blocks.BEDROCK, Blocks.COBBLESTONE, Blocks.SLAB.rotate(Rotation.UP));
-    private static final int ATTEMPTS = 8;
 
-    public static void log(
+    public static void logForDiscord(
             final World world,
             final Vec3i guiderPos,
             final boolean checkWall
     ) {
-        log(world, guiderPos, guiderPos, checkWall);
+        logForDiscord(world, guiderPos, guiderPos, checkWall, true);
     }
 
-    public static void log(
+    public static void logForDiscord(
             final World world,
             final Vec3i guiderPos,
             final Vec3i clipToPos,
-            final boolean checkWall
+            final boolean checkWall,
+            final boolean checkConsistency
     ) {
         final World snapshot = world.snapshot();
         final List<Entity> entities = new ArrayList<>(snapshot.getEntityList());
         snapshot.keepTicking();
 
         final List<StackHeight> stackHeights = StackHeight.getStackHeights(entities);
-        final List<ClippedBlock> clips = getClippingBlocks(world, guiderPos, clipToPos, stackHeights);
+        final List<ClippedBlock> clips = getClippingBlocks(
+                world, guiderPos, clipToPos, stackHeights, checkConsistency
+        );
 
         LOGGER.info("```js");
         LOGGER.info("// Guider-Y: {}", guiderPos.y());
@@ -60,7 +62,8 @@ public final class ClippingBlocks {
             final World world,
             final Vec3i guiderPos,
             final Vec3i clipToPos,
-            final List<StackHeight> stackHeights
+            final List<StackHeight> stackHeights,
+            final boolean checkConsistency
     ) {
         final Map<Vec3i, Block> wallBlocks = new HashMap<>();
         for (final Rotation rotation : Rotation.values()) {
@@ -72,17 +75,26 @@ public final class ClippingBlocks {
             }
         }
 
+        final Vec3i clipPos;
+        if (!stackHeights.isEmpty() && guiderPos.x() == clipToPos.x() && guiderPos.z() == clipToPos.z()) {
+            clipPos = stackHeights.getFirst().position();
+        } else {
+            clipPos = clipToPos;
+        }
+
         final List<ClippedBlock> clips = new ArrayList<>();
         final int stackTop = stackHeights.stream()
-                .mapToInt(StackHeight::height)
+                .mapToInt(StackHeight::top)
                 .max()
                 .orElse(Integer.MIN_VALUE);
 
         final int highestClipY = Math.max(stackTop + 3, clipToPos.y());
         for (final Block block : CLIP_BLOCKS) {
             for (int blockY = guiderPos.y(); blockY <= highestClipY; ++blockY) {
-                final Vec3i position = guiderPos.setY(blockY);
-                final Optional<ClippedBlock> clip = clipWithBlock(world, position, block, wallBlocks, stackHeights);
+                final Vec3i position = clipPos.setY(blockY);
+                final Optional<ClippedBlock> clip = clipWithBlock(
+                        world, position, block, wallBlocks, stackHeights, checkConsistency
+                );
                 clip.ifPresent(clips::add);
             }
         }
@@ -95,9 +107,11 @@ public final class ClippingBlocks {
             final Vec3i position,
             final Block block,
             final Map<Vec3i, Block> wallBlocks,
-            final List<StackHeight> stackHeights
+            final List<StackHeight> stackHeights,
+            final boolean checkConsistency
     ) {
-        for (int count = 0; count < ATTEMPTS; ++count) {
+        final int attempts = checkConsistency ? 256 : 6;
+        for (int count = 0; count < attempts; ++count) {
             final World snapshot = world.snapshot();
             final List<Entity> entities = new ArrayList<>(snapshot.getEntityList());
 
@@ -115,7 +129,7 @@ public final class ClippingBlocks {
             // calculate stack heights
             final List<StackHeight> newStackHeights = StackHeight.getStackHeights(entities);
             final boolean stackedUpToClip = newStackHeights.stream()
-                    .anyMatch(stackHeight -> position.y() - 1 == stackHeight.height());
+                    .anyMatch(stackHeight -> position.y() - 1 == stackHeight.top());
 
             if ((!stackedUpToClip || !destroyedWall) && !stackHeights.equals(newStackHeights)) {
                 return Optional.of(new ClippedBlock(position, block, newStackHeights, destroyedWall, count != 0));
@@ -133,7 +147,7 @@ public final class ClippingBlocks {
 
             int stackTop = Integer.MIN_VALUE;
             for (final StackHeight stack : this.stackHeights) {
-                stackTop = Math.max(stackTop, stack.height());
+                stackTop = Math.max(stackTop, stack.top());
             }
 
             builder.append(" understacked: %d [".formatted(this.position.y() - stackTop - 1));
