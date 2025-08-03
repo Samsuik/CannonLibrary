@@ -46,6 +46,10 @@ public interface Component<U extends ComponentsHolder<?>> {
         };
     }
 
+    default Component<U> state(final boolean enabled) {
+        return this.condition((user, tick) -> enabled);
+    }
+
     default Component<U> compose(final Component<U> component) {
         return this.condition(component::action);
     }
@@ -105,13 +109,30 @@ public interface Component<U extends ComponentsHolder<?>> {
         };
     }
 
+    default Component<U> once() {
+        return this.limit(1, false);
+    }
+
+    default Component<U> oncePerTick() {
+        return this.limit(1, true);
+    }
+
     default Component<U> limit(final int limit) {
+        return this.limit(limit, false);
+    }
+
+    default Component<U> limit(final int limit, final boolean resetOnTick) {
         return new Component<>() {
+            private int tick = -1;
             private int times = 0;
 
             @Override
             public boolean action(final U user, final int tick) {
                 boolean success = false;
+                if (resetOnTick && this.tick != tick) {
+                    this.tick = tick;
+                    this.times = 0;
+                }
                 if (this.times++ < limit) {
                     // user.removeCurrentComponent();
                     success = Component.this.action(user, tick);

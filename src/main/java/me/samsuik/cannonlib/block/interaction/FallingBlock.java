@@ -23,8 +23,7 @@ public final class FallingBlock implements Interaction {
                     entity -> entity.position = position.toVec3d().center(),
                     List.of(
                             EntityComponents.ENTITY_TICK_WITH_COLLISION,
-                            EntityComponents.fallingBlock(block, 1),
-                            EntityComponents.LOGGER
+                            EntityComponents.fallingBlock(block, 1)
                     )
             ));
             world.setBlock(position, Blocks.AIR);

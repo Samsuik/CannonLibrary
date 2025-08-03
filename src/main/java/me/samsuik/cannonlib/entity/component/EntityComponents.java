@@ -57,7 +57,7 @@ public final class EntityComponents {
     }
 
     public static Component<Entity> transform(final int runAt, final BiConsumer<Entity, Integer> transform) {
-        return new TransformComponent(transform).limit(1).afterOrAtTick(runAt);
+        return new TransformComponent(transform).once().afterOrAtTick(runAt);
     }
 
     public static Component<Entity> cloneOne() {
@@ -69,7 +69,7 @@ public final class EntityComponents {
     }
 
     public static Component<Entity> clone(final int runAt, final int amount) {
-        return new CloneComponent(amount).limit(1).afterOrAtTick(runAt);
+        return new CloneComponent(amount).once().afterOrAtTick(runAt);
     }
 
     public static Component<Entity> sand() {

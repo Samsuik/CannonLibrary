@@ -1,12 +1,13 @@
 package me.samsuik.cannonlib.explosion;
 
 public final class ExplosionFlags {
-    public static final int DESTROY_BLOCKS       = 0b000001;
-    public static final int OBSTRUCTION          = 0b000010;
-    public static final int CONSISTENT_RADIUS    = 0b000100;
-    public static final int ENTITIES_UP_TO_COUNT = 0b001000;
-    public static final int SINGLE_IMPACT        = 0b010000;
-    public static final int PAPER_OPTIMISE_EXP   = 0b100000;
+    public static final int DESTROY_BLOCKS       = 0b0000001;
+    public static final int OBSTRUCTION          = 0b0000010;
+    public static final int CONSISTENT_RADIUS    = 0b0000100;
+    public static final int ENTITIES_UP_TO_COUNT = 0b0001000;
+    public static final int SINGLE_IMPACT        = 0b0010000;
+    public static final int PAPER_OPTIMISE_EXP   = 0b0100000;
+    public static final int DISABLE_PARITY       = 0b1000000;
     public static final int HANDLE_BLOCKS        = DESTROY_BLOCKS | OBSTRUCTION;
     public static final int BATCH_SWINGING       = ENTITIES_UP_TO_COUNT | SINGLE_IMPACT;
 

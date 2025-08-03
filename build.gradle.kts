@@ -4,7 +4,7 @@ plugins {
     `maven-publish`
 }
 
-group = "me.samsuik"
+group = "me.samsuik.cannonlib"
 version = "1.0-SNAPSHOT"
 
 repositories {
