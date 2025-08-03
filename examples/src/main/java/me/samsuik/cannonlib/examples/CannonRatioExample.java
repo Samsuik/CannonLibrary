@@ -47,19 +47,19 @@ public final class CannonRatioExample {
         snapshot.keepTicking();
 
         final List<StackHeight> stackHeights = StackHeight.getStackHeights(entities);
-        final int highestSandStacked = stackHeights.stream()
+        final int tallestSandStack = stackHeights.stream()
                 .mapToInt(stackHeight -> stackHeight.top() + 64)
                 .max()
                 .orElse(0);
 
-        System.out.println("Stacked " + highestSandStacked + " sand");
+        System.out.println("Stacked " + tallestSandStack + " sand");
 
         // Log the sand stacks
         for (final StackHeight stackHeight : stackHeights) {
             System.out.println(stackHeight.information(false));
         }
 
-        // Log any clips
+        // Log any clips and irregularities
         for (final ClippingBlocks.ClippedBlock clip : ClippingBlocks.getClippingBlocks(world, guiderPos, guiderPos, stackHeights, true)) {
             System.out.println(clip.information(guiderPos, false));
         }
