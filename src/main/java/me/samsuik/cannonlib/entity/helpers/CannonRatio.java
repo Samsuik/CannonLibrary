@@ -24,6 +24,7 @@ public final class CannonRatio {
     private static final int DEFAULT_POWER_TNT = 768;
     private static final Pattern POWER_PATTERN = Pattern.compile("power|p\\d+");
     private static final Pattern RESTACK_PATTERN = Pattern.compile("osrb|restack", Pattern.CASE_INSENSITIVE);
+    private static final Pattern FALLING_BLOCK_PATTERN = Pattern.compile("sand|concrete", Pattern.CASE_INSENSITIVE);
     private static final Pattern CLEAN_UP_PATTERN = Pattern.compile("^(?:#|//).*$|\\([^0-9].*?\\)|/\\s*\\d+|[,/+<>]|(?:Amount|Tick):? *[A-z]+", Pattern.CASE_INSENSITIVE);
     private static final Pattern NAME_PATTERN = Pattern.compile("^(?:[\\d.]+\\s)?((?: ?\\w+)+).*", Pattern.CASE_INSENSITIVE);
     private static final Pattern EXTRACT_RATIO_PATTERN = Pattern.compile("(?:Tick:? *|^\\s*)(?<tick>[\\d.]+)\\b-?|(?:Amount:? *|\\()(?<amount>\\d+)?\\)?-?", Pattern.CASE_INSENSITIVE);
@@ -118,7 +119,7 @@ public final class CannonRatio {
 
         // Create entity data
         final boolean isPower = POWER_PATTERN.matcher(nameLowercase).find();
-        final boolean isSand = !isPower && nameLowercase.contains("sand");
+        final boolean isFallingBlock = !isPower && FALLING_BLOCK_PATTERN.matcher(nameLowercase).find();
 
         if (isPower) {
             powerOffset[0] += 10;
@@ -128,7 +129,7 @@ public final class CannonRatio {
         final Vec3d entityPos = positions.getOrDefault(name, defaultPos);
         final Vec3d offsetPos = entityPos.add(position).add(-Math.max(powerOffset[0], 0), 0, 0);
 
-        if (isSand) {
+        if (isFallingBlock) {
             tick += 1.0e-3;
         } else if (!isPower) {
             tick += 1.0e-5; // always after the power if the ticks are equal
@@ -140,10 +141,10 @@ public final class CannonRatio {
             amount = Math.abs(amount);
         }
 
-        return new RatioEntityData(name, offsetPos, tick, amount, isPower, isSand);
+        return new RatioEntityData(name, offsetPos, tick, amount, isPower, isFallingBlock);
     }
 
-    private record RatioEntityData(String name, Vec3d position, double tick, int amount, boolean power, boolean sand) {
+    private record RatioEntityData(String name, Vec3d position, double tick, int amount, boolean power, boolean fallingBlock) {
         public Entity createEntity(final boolean useGameTicks, final int explosionFlags, final List<Component<Entity>> extraComponents) {
             final List<Component<Entity>> components = new ArrayList<>();
             components.add(EntityComponents.spawnWithData(EntityDataKeys.NAME, this.name));
@@ -152,7 +153,7 @@ public final class CannonRatio {
             if (!this.power()) {
                 components.add(EntityComponents.ENTITY_TICK_WITH_COLLISION
                         .condition(EntityConditions.HAS_MOMENTUM
-                                .or(EntityConditions.hasEntityMoved(this.position()))
+                                .or(EntityConditions.hasEntityMoved(this.position))
                         )
                 );
             }
@@ -160,16 +161,22 @@ public final class CannonRatio {
             // Add extra components before the fb/explode component so the position and motion are accurate
             components.addAll(extraComponents);
 
-            if (this.sand()) {
-                final boolean restack = RESTACK_PATTERN.matcher(this.name).find();
-                final Block fallingBlock = restack ? Blocks.GRAVEL : Blocks.SAND;
-                components.add(EntityComponents.fallingBlock(fallingBlock, this.amount()));
+            if (this.fallingBlock) {
+                final Block fallingBlock;
+                if (this.name.contains("concrete")) {
+                    fallingBlock = Blocks.CONCRETE_POWDER;
+                } else if (RESTACK_PATTERN.matcher(this.name).find()) {
+                    fallingBlock = Blocks.GRAVEL;
+                } else {
+                    fallingBlock = Blocks.SAND;
+                }
+                components.add(EntityComponents.fallingBlock(fallingBlock, this.amount));
             } else {
                 final int gameTicks = (int) (this.tick() * (useGameTicks ? 1.0 : 2.0));
-                components.add(EntityComponents.explode(gameTicks, this.amount(), explosionFlags));
+                components.add(EntityComponents.explode(gameTicks, this.amount, explosionFlags));
             }
 
-            return Entity.create(entity -> entity.position = this.position(), components);
+            return Entity.create(entity -> entity.position = this.position, components);
         }
     }
 }
