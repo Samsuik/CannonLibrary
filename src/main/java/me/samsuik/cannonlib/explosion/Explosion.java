@@ -66,9 +66,24 @@ public final class Explosion {
         return blocksToExplode;
     }
 
-    public static Set<Vec3i> explode(final Entity entity, final Obstruction obstructionCache, final int count, final int flags) {
-        final Vec3d explosionPosition = Explosion.explosionPosition(entity.position);
-        final World world = entity.getWorld();
+    public static Set<Vec3i> explode(
+        final Entity entity, 
+        final World world, 
+        final Obstruction obstructionCache, 
+        final int count, 
+        final int flags
+    ) {
+        return explode(entity, explosionPosition(entity.position), world, obstructionCache, count, flags);
+    }
+
+    public static Set<Vec3i> explode(
+        final Entity entity, 
+        final Vec3d explosionPosition, 
+        final World world, 
+        final Obstruction obstructionCache, 
+        final int count,
+        final int flags
+    ) {
         final Set<Vec3i> blocksToExplode;
 
         if ((flags & ExplosionFlags.DESTROY_BLOCKS) != 0) {
@@ -80,7 +95,7 @@ public final class Explosion {
         final boolean obstruction = (flags & ExplosionFlags.OBSTRUCTION) != 0;
 
         if ((flags & ExplosionFlags.ENTITIES_UP_TO_COUNT) != 0) {
-            impactEntitiesUpToCount(entity, explosionPosition, world, obstructionCache, obstruction, flags);
+            impactEntitiesUpToCount(entity, explosionPosition, world, obstructionCache, obstruction, count, flags);
         } else {
             impactEntities(entity, explosionPosition, world, obstructionCache, obstruction);
         }
@@ -97,7 +112,9 @@ public final class Explosion {
     ) {
         for (final Entity otherEntity : world.getEntityList()) {
             if (otherEntity != entity) {
-                final Vec3d impact = Explosion.impact(otherEntity.position, explosionPosition, world, obstructionCache, obstruction);
+                final Vec3d impact = Explosion.impact(
+                    otherEntity.position, explosionPosition, world, obstructionCache, obstruction
+                );
                 otherEntity.momentum = otherEntity.momentum.add(impact);
             }
         }
@@ -110,6 +127,7 @@ public final class Explosion {
         final World world, 
         final Obstruction obstructionCache, 
         final boolean obstruction,
+        final int count,
         final int flags
     ) {
         final boolean singleImpact = (flags & ExplosionFlags.SINGLE_IMPACT) != 0;
