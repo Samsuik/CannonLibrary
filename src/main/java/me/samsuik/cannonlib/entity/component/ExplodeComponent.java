@@ -40,7 +40,7 @@ public final class ExplodeComponent implements Component<Entity> {
                 // Handle swinging
                 final Vec3d entityPosition = entity.getEntityState().position();
                 final Vec3d explosionPosition = Explosion.explosionPosition(entity.position);
-                final Vec3d swing = Explosion.impact(entityPosition, explosionPosition, world, obstruction, flags);
+                final Vec3d swing = Explosion.impact(entityPosition, explosionPosition, world, obstruction, (flags & ExplosionFlags.OBSTRUCTION) != 0);
                 entity.getEntityState().apply(entity);
                 entity.momentum = entity.momentum.add(swing);
 
