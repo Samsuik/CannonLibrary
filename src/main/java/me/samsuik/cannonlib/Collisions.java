@@ -9,7 +9,7 @@ public final class Collisions implements Iterable<Shape> {
     private final List<Shape> blockCollisions;
     private final List<Shape> globalCollisions;
 
-    public Collisions(List<Shape> blockCollisions, List<Shape> globalCollisions) {
+    public Collisions(final List<Shape> blockCollisions, final List<Shape> globalCollisions) {
         this.blockCollisions = blockCollisions;
         this.globalCollisions = globalCollisions;
     }
@@ -20,25 +20,25 @@ public final class Collisions implements Iterable<Shape> {
     }
 
     private static final class ShapeIterator implements Iterator<Shape> {
-        private final Iterator<Shape> iterator1;
-        private final Iterator<Shape> iterator2;
+        private final Iterator<Shape> blockCollisionsItr;
+        private final Iterator<Shape> globalCollisionsItr;
 
-        public ShapeIterator(final List<Shape> list1, final List<Shape> list2) {
-            this.iterator1 = list1.iterator();
-            this.iterator2 = list2.iterator();
+        public ShapeIterator(final List<Shape> blockCollisions, final List<Shape> globalCollisions) {
+            this.blockCollisionsItr = blockCollisions.iterator();
+            this.globalCollisionsItr = globalCollisions.iterator();
         }
 
         @Override
         public boolean hasNext() {
-            return this.iterator1.hasNext() || this.iterator2.hasNext();
+            return this.blockCollisionsItr.hasNext() || this.globalCollisionsItr.hasNext();
         }
 
         @Override
         public Shape next() {
-            if (this.iterator1.hasNext()) {
-                return this.iterator1.next();
-            } else if (this.iterator2.hasNext()) {
-                return this.iterator2.next();
+            if (this.blockCollisionsItr.hasNext()) {
+                return this.blockCollisionsItr.next();
+            } else if (this.globalCollisionsItr.hasNext()) {
+                return this.globalCollisionsItr.next();
             }
             return null;
         }

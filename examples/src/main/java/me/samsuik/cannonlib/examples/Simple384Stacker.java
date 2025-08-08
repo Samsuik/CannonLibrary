@@ -5,7 +5,6 @@ import me.samsuik.cannonlib.block.Blocks;
 import me.samsuik.cannonlib.entity.Entity;
 import me.samsuik.cannonlib.entity.component.EntityComponents;
 import me.samsuik.cannonlib.explosion.ExplosionFlags;
-import me.samsuik.cannonlib.physics.shape.Shapes;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
 import me.samsuik.cannonlib.physics.vec3.Vec3i;
 
