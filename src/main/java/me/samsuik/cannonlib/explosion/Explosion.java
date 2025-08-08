@@ -66,9 +66,9 @@ public final class Explosion {
         return blocksToExplode;
     }
 
-    public static Set<Vec3i> explode(final Entity entity, final Obstruction obstruction, final int count, final int flags) {
-        final World world = entity.getWorld();
+    public static Set<Vec3i> explode(final Entity entity, final Obstruction obstructionCache, final int count, final int flags) {
         final Vec3d explosionPosition = Explosion.explosionPosition(entity.position);
+        final World world = entity.getWorld();
         final Set<Vec3i> blocksToExplode;
 
         if ((flags & ExplosionFlags.DESTROY_BLOCKS) != 0) {
@@ -77,15 +77,45 @@ public final class Explosion {
             blocksToExplode = Set.of();
         }
 
-        // todo: calculate swinging positions ahead of time, that way we can do stationary and swinging explosion optimisations as well as improving locality.
-        // Basically, the same way its done in Sakura. The SINGLE_IMPACT implementation might also be changed to instead multiply the impact instead of calculating it repeatedly.
+        final boolean obstruction = (flags & ExplosionFlags.OBSTRUCTION) != 0;
 
-        // Affect entities
-        final boolean upToCount = (flags & ExplosionFlags.ENTITIES_UP_TO_COUNT) != 0;
-        final int limit = upToCount ? (count * ExplosionFlags.readData(flags, 1)) : Integer.MAX_VALUE;
+        if ((flags & ExplosionFlags.ENTITIES_UP_TO_COUNT) != 0) {
+            impactEntitiesUpToCount(entity, explosionPosition, world, obstructionCache, obstruction, flags);
+        } else {
+            impactEntities(entity, explosionPosition, world, obstructionCache, obstruction);
+        }
+
+        return blocksToExplode;
+    }
+
+    private static void impactEntities(
+        final Entity entity, 
+        final Vec3d explosionPosition, 
+        final World world, 
+        final Obstruction obstructionCache, 
+        final boolean obstruction
+    ) {
+        for (final Entity otherEntity : world.getEntityList()) {
+            if (otherEntity != entity) {
+                final Vec3d impact = Explosion.impact(otherEntity.position, explosionPosition, world, obstructionCache, obstruction);
+                otherEntity.momentum = otherEntity.momentum.add(impact);
+            }
+        }
+
+    }
+
+    private static void impactEntitiesUpToCount(
+        final Entity entity, 
+        final Vec3d explosionPosition, 
+        final World world, 
+        final Obstruction obstructionCache, 
+        final boolean obstruction,
+        final int flags
+    ) {
         final boolean singleImpact = (flags & ExplosionFlags.SINGLE_IMPACT) != 0;
-        Vec3d reuseImpact = null;
+        final int limit = ExplosionFlags.readData(flags, 1);
 
+        Vec3d reuseImpact = null;
         int entityIndex = 0;
         for (final Entity otherEntity : world.getEntityList()) {
             if (otherEntity != entity) {
@@ -98,7 +128,7 @@ public final class Explosion {
                 if (singleImpact && reuseImpact != null) {
                     impact = reuseImpact;
                 } else {
-                    impact = Explosion.impact(position, explosionPosition, world, obstruction, flags);
+                    impact = Explosion.impact(position, explosionPosition, world, null, obstruction);
                     if (singleImpact && impact.magnitudeSquared() > 0.0) {
                         reuseImpact = impact;
                     }
@@ -106,12 +136,10 @@ public final class Explosion {
                 otherEntity.momentum = otherEntity.momentum.add(impact);
             }
         }
-
-        return blocksToExplode;
     }
 
     public static Vec3d impact(final Vec3d position, final Vec3d explosionPosition) {
-        return impact(position, explosionPosition, null, null, 0);
+        return impact(position, explosionPosition, null, null, false);
     }
 
     public static Vec3d impact(
@@ -119,7 +147,7 @@ public final class Explosion {
             final Vec3d explosionPosition,
             final World world,
             final Obstruction obstructionCache,
-            final int flags
+            final boolean obstruction
     ) {
         final Vec3d difference = position.sub(explosionPosition);
         final double magnitude = difference.magnitude();
@@ -129,7 +157,7 @@ public final class Explosion {
         }
 
         final float blockDensity;
-        if ((flags & ExplosionFlags.OBSTRUCTION) != 0) {
+        if (obstruction) {
             blockDensity = obstructionCache.getDensity(position, explosionPosition, world);
         } else {
             blockDensity = 1.0f;
