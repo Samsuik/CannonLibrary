@@ -36,8 +36,8 @@ public final class ScheduledBlockTicks {
     }
 
     public void copy(final ScheduledBlockTicks blockTicks) {
-        for (final BlocksToTick blocksToTick : this.blocksToTicks) {
-            blockTicks.blocksToTicks.add(blocksToTick.copy());
+        for (final BlocksToTick blocksToTick : blockTicks.blocksToTicks) {
+            this.blocksToTicks.add(blocksToTick.copy());
         }
     }
 

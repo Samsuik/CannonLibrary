@@ -4,6 +4,7 @@ import me.samsuik.cannonlib.block.Block;
 import me.samsuik.cannonlib.block.Blocks;
 import me.samsuik.cannonlib.entity.Entity;
 import me.samsuik.cannonlib.physics.Rotation;
+import me.samsuik.cannonlib.physics.shape.AABB;
 import me.samsuik.cannonlib.physics.shape.Shape;
 import me.samsuik.cannonlib.physics.shape.Shapes;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
@@ -13,12 +14,9 @@ import java.util.*;
 
 public final class World {
     private final EntityList entityList = new EntityList();
-    // todo: tree
-    private final Map<Vec3i, Block> blocks = new HashMap<>();
-    private final Map<Vec3i, Shape> blockShapes = new HashMap<>();
-    private final List<Shape> blockCollisions = new ArrayList<>();
-    private final List<Shape> globalCollisions = new ArrayList<>();
+    private final BlocksAndShapes blocks = new BlocksAndShapes();
     private final ScheduledBlockTicks blockTicks = new ScheduledBlockTicks();
+    private final List<Shape> globalCollisions = new ArrayList<>();
     private boolean blockUpdates = false;
 
     public void doBlockPhysics(final boolean physics) {
@@ -70,43 +68,29 @@ public final class World {
         return clonedEntities;
     }
 
-    public Block getBlockAt(final Vec3i position) {
-        final Block block = this.getBlockAtRaw(position);
-        return block == null ? Blocks.AIR : block;
-    }
-
-    public Block getBlockAtRaw(final Vec3i position) {
-        return this.blocks.get(position);
+    public Collection<Entity> getEntityList() {
+        return this.entityList;
     }
 
     public void removeBlock(final Vec3i position) {
         this.setBlock(position, null);
     }
 
+    public Block getBlockAt(final Vec3i position) {
+        final Block block = this.getBlockAtRaw(position);
+        return block == null ? Blocks.AIR : block;
+    }
+
+    public Block getBlockAtRaw(final Vec3i position) {
+        return this.blocks.getBlock(position);
+    }
+
+    public Map<Vec3i, Block> getBlocks(final Vec3i position, final int radius) {
+        return this.blocks.getBlocks(position, radius);
+    }
+
     public void setBlock(final Vec3i position, final Block block) {
-        if (block == null) {
-            final Shape collision = this.blockShapes.remove(position);
-            if (collision != null) {
-                this.blockCollisions.remove(collision);
-            }
-            this.blocks.remove(position);
-        } else {
-            final Shape collision = block.shape();
-            if (collision != Shapes.EMPTY_SHAPE) {
-                final Shape movedCollision = collision.move(position);
-                final Shape present = this.blockShapes.put(position, movedCollision);
-                if (present != null) {
-                    this.blockCollisions.remove(present);
-                }
-                this.blockCollisions.add(movedCollision);
-            } else {
-                final Shape present = this.blockShapes.remove(position);
-                if (present != null) {
-                    this.blockCollisions.remove(present);
-                }
-            }
-            this.blocks.put(position, block);
-        }
+        this.blocks.setBlock(position, block);
 
         if (this.blockUpdates) {
             this.updateBlocksAroundPos(position, block);
@@ -137,8 +121,6 @@ public final class World {
 
     public void removeBlocks() {
         this.blocks.clear();
-        this.blockShapes.clear();
-        this.blockCollisions.clear();
     }
 
     public void floor(final int level) {
@@ -164,16 +146,8 @@ public final class World {
         this.globalCollisions.remove(collision);
     }
 
-    public Collection<Entity> getEntityList() {
-        return this.entityList;
-    }
-
-    public Map<Vec3i, Block> getBlocks() {
-        return Collections.unmodifiableMap(this.blocks);
-    }
-    
-    public Collisions getCollisions() {
-        return new Collisions(this.blockCollisions, this.globalCollisions);
+    public Collisions getCollisions(final AABB boundingBox) {
+        return new Collisions(this.blocks.getCollisions(boundingBox), this.globalCollisions);
     }
 
     public World snapshot() {
@@ -184,13 +158,12 @@ public final class World {
             world.addEntity(entity.copy());
         }
 
+        // Shapes and blocks are immutable
+        world.blocks.copy(this.blocks);
+
         // copy all scheduled blocks
         world.blockTicks.copy(this.blockTicks);
 
-        // Shapes and blocks are immutable
-        world.blocks.putAll(this.blocks);
-        world.blockShapes.putAll(this.blockShapes);
-        world.blockCollisions.addAll(this.blockCollisions);
         world.globalCollisions.addAll(this.globalCollisions);
         return world;
     }

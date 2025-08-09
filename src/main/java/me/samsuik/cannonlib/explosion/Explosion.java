@@ -21,7 +21,7 @@ public final class Explosion {
     private static Set<Vec3i> calculateExplodedPositions(final World world, final Vec3d explosionPosition, final int flags) {
         final Set<Vec3i> blocksToExplode = new HashSet<>();
         final double maxRange = 4.0f * 1.12f + 0.625f;
-        final Map<Vec3i, Block> blocks = world.getBlocks();
+        final Map<Vec3i, Block> blocks = world.getBlocks(explosionPosition.toVec3i(), (int) maxRange);
 
         for (final Map.Entry<Vec3i, Block> entry : blocks.entrySet()) {
             final Block explodeBlock = entry.getValue();
@@ -131,7 +131,7 @@ public final class Explosion {
         final int flags
     ) {
         final boolean singleImpact = (flags & ExplosionFlags.SINGLE_IMPACT) != 0;
-        final int limit = ExplosionFlags.readData(flags, 1);
+        final int limit = count * ExplosionFlags.readData(flags, 1);
 
         Vec3d reuseImpact = null;
         int entityIndex = 0;
@@ -146,7 +146,7 @@ public final class Explosion {
                 if (singleImpact && reuseImpact != null) {
                     impact = reuseImpact;
                 } else {
-                    impact = Explosion.impact(position, explosionPosition, world, null, obstruction);
+                    impact = Explosion.impact(position, explosionPosition, world, obstructionCache, obstruction);
                     if (singleImpact && impact.magnitudeSquared() > 0.0) {
                         reuseImpact = impact;
                     }

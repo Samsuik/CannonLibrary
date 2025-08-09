@@ -34,7 +34,7 @@ public final class ExplodeComponent implements Component<Entity> {
         final World world = entity.getWorld();
         final Obstruction obstruction = new Obstruction();
         for (int remaining = this.amount - 1; remaining >= 0; --remaining) {
-            final Set<Vec3i> blocksToExplode = Explosion.explode(entity, obstruction, this.amount - remaining, flags);
+            final Set<Vec3i> blocksToExplode = Explosion.explode(entity, world, obstruction, this.amount - remaining, flags);
 
             if (remaining != 0 || entity.hasData(EntityDataKeys.REPEAT)) {
                 // Handle swinging

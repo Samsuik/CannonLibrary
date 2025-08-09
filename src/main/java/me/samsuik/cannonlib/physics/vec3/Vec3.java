@@ -91,6 +91,10 @@ public interface Vec3<T extends Vec3<?>> {
         return this.getX() + this.getY() + this.getZ();
     }
 
+    default double volume() {
+        return this.getX() * this.getY() * this.getZ();
+    }
+
     default Vec3d fraction() {
         return this.toVec3d().sub(this.floor());
     }

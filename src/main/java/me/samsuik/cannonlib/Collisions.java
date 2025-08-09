@@ -3,13 +3,12 @@ package me.samsuik.cannonlib;
 import me.samsuik.cannonlib.physics.shape.Shape;
 
 import java.util.Iterator;
-import java.util.List;
 
 public final class Collisions implements Iterable<Shape> {
-    private final List<Shape> blockCollisions;
-    private final List<Shape> globalCollisions;
+    private final Iterable<Shape> blockCollisions;
+    private final Iterable<Shape> globalCollisions;
 
-    public Collisions(final List<Shape> blockCollisions, final List<Shape> globalCollisions) {
+    public Collisions(final Iterable<Shape> blockCollisions, final Iterable<Shape> globalCollisions) {
         this.blockCollisions = blockCollisions;
         this.globalCollisions = globalCollisions;
     }
@@ -23,7 +22,7 @@ public final class Collisions implements Iterable<Shape> {
         private final Iterator<Shape> blockCollisionsItr;
         private final Iterator<Shape> globalCollisionsItr;
 
-        public ShapeIterator(final List<Shape> blockCollisions, final List<Shape> globalCollisions) {
+        public ShapeIterator(final Iterable<Shape> blockCollisions, final Iterable<Shape> globalCollisions) {
             this.blockCollisionsItr = blockCollisions.iterator();
             this.globalCollisionsItr = globalCollisions.iterator();
         }
