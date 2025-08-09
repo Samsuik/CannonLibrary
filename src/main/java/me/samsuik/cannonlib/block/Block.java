@@ -8,8 +8,8 @@ import me.samsuik.cannonlib.physics.shape.Shape;
 import me.samsuik.cannonlib.physics.shape.Shapes;
 
 public record Block(String name, BlockShape shape, Interaction interaction, float strength, boolean replace) {
-    public static Block from(String name, BlockShape shape, float strength) {
-        return new Block(name, shape, BlockInteractions.NONE, strength, false);
+    public static Block from(final String name, final Shape shape, final float strength) {
+        return new Block(name, Shapes.asBlockShape(shape), BlockInteractions.NONE, strength, false);
     }
 
     public static Builder builder() {
@@ -70,26 +70,22 @@ public record Block(String name, BlockShape shape, Interaction interaction, floa
 
         private Builder() {}
 
-        public Builder name(String name) {
+        public Builder name(final String name) {
             this.name = name;
             return this;
         }
 
-        public Builder shape(Shape shape) {
-            return this.shape(BlockShape.single(shape));
-        }
-
-        public Builder shape(BlockShape shape) {
-            this.shape = shape;
+        public Builder shape(final Shape shape) {
+            this.shape = Shapes.asBlockShape(shape);
             return this;
         }
 
-        public Builder interaction(Interaction interaction) {
+        public Builder interaction(final Interaction interaction) {
             this.interaction = interaction;
             return this;
         }
 
-        public Builder strength(float strength) {
+        public Builder strength(final float strength) {
             this.strength = strength;
             return this;
         }

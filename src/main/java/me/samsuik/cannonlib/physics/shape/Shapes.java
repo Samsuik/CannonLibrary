@@ -6,13 +6,13 @@ import java.util.List;
 
 public final class Shapes {
     public static final BlockShape EMPTY_SHAPE = new BlockShape(List.of());
-    public static final BlockShape FULL_BLOCK = BlockShape.single(block(0, 0, 0));
-    public static final BlockShape LADDER = BlockShape.single(Shapes.box(0.0, 0.0, 0.0, 16.0, 16.0, 3.0));
-    public static final BlockShape HANGING_SIGN = BlockShape.single(Shapes.column(16.0, 4.0, 14.0, 16.0));
-    public static final BlockShape TOP_TRAPDOOR = BlockShape.single(Shapes.column(16.0, 16.0, 13.0, 16.0));
-    public static final BlockShape BOTTOM_TRAPDOOR = BlockShape.single(Shapes.column(16.0, 16.0, 0, 3.0));
-    public static final BlockShape SIDE_TRAPDOOR = TOP_TRAPDOOR.rotate(90, 0);
-    public static final BlockShape SLAB = BlockShape.single(Shapes.column(16.0, 16.0, 0.0, 8.0));
+    public static final Shape FULL_BLOCK = block(0, 0, 0);
+    public static final Shape LADDER = Shapes.box(0.0, 0.0, 0.0, 16.0, 16.0, 3.0);
+    public static final Shape HANGING_SIGN = Shapes.column(16.0, 4.0, 14.0, 16.0);
+    public static final Shape TOP_TRAPDOOR = Shapes.column(16.0, 16.0, 13.0, 16.0);
+    public static final Shape BOTTOM_TRAPDOOR = Shapes.column(16.0, 16.0, 0, 3.0);
+    public static final Shape SIDE_TRAPDOOR = TOP_TRAPDOOR.rotate(90, 0);
+    public static final Shape SLAB = Shapes.column(16.0, 16.0, 0.0, 8.0);
     public static final BlockShape STAIR = new BlockShape(List.of(
             Shapes.column(16.0, 16.0, 0.0, 8.0),
             Shapes.box(0.0, 8.0, 0.0, 16.0, 16.0, 8.0)
@@ -46,15 +46,15 @@ public final class Shapes {
             Shapes.box(12.0, 3.0, 5.0, 14.0, 9.0, 11.0),
             Shapes.box(4.0, 0.0, 2.0, 12.0, 12.0, 14.0)
     ));
-    public static final BlockShape AMETHYST_CLUSTER = BlockShape.single(Shapes.box(3.0f, 3.0f, 9.0f, 13.0f, 13.0f, 16.0));
-    public static final BlockShape CEILING_AMETHYST_CLUSTER = AMETHYST_CLUSTER.rotate(90, 0);
-    public static final BlockShape LARGE_AMETHYST_BUD = BlockShape.single(Shapes.box(3.0, 3.0, 11.0, 13.0, 13.0, 16.0));
-    public static final BlockShape MEDIUM_AMETHYST_BUD = BlockShape.single(Shapes.box(3.0, 3.0, 12.0, 13.0, 13.0, 16.0));
-    public static final BlockShape SMALL_AMETHYST_BUD = BlockShape.single(Shapes.box(4.0, 4.0, 13.0, 12.0, 12.0, 16.0));
-    public static final BlockShape AGE_0_COCOA = BlockShape.single(Shapes.box(6.0D, 7.0D, 1.0D, 10.0D, 12.0D, 5.0D));
-    public static final BlockShape AGE_1_COCOA = BlockShape.single(Shapes.box(5.0D, 5.0D, 1.0D, 11.0D, 12.0D, 7.0D));
-    public static final BlockShape AGE_2_COCOA = BlockShape.single(Shapes.box(4.0D, 3.0D, 1.0D, 12.0D, 12.0D, 9.0D));
-    public static final BlockShape FLOOR_BELL = BlockShape.single(Shapes.box(0.0D, 0.0D, 4.0D, 16.0D, 16.0D, 12.0D));
+    public static final Shape AMETHYST_CLUSTER = Shapes.box(3.0f, 3.0f, 9.0f, 13.0f, 13.0f, 16.0);
+    public static final Shape CEILING_AMETHYST_CLUSTER = AMETHYST_CLUSTER.rotate(90, 0);
+    public static final Shape LARGE_AMETHYST_BUD = Shapes.box(3.0, 3.0, 11.0, 13.0, 13.0, 16.0);
+    public static final Shape MEDIUM_AMETHYST_BUD = Shapes.box(3.0, 3.0, 12.0, 13.0, 13.0, 16.0);
+    public static final Shape SMALL_AMETHYST_BUD = Shapes.box(4.0, 4.0, 13.0, 12.0, 12.0, 16.0);
+    public static final Shape AGE_0_COCOA = Shapes.box(6.0D, 7.0D, 1.0D, 10.0D, 12.0D, 5.0D);
+    public static final Shape AGE_1_COCOA = Shapes.box(5.0D, 5.0D, 1.0D, 11.0D, 12.0D, 7.0D);
+    public static final Shape AGE_2_COCOA = Shapes.box(4.0D, 3.0D, 1.0D, 12.0D, 12.0D, 9.0D);
+    public static final Shape FLOOR_BELL = Shapes.box(0.0D, 0.0D, 4.0D, 16.0D, 16.0D, 12.0D);
     public static final BlockShape WALL_BELL = new BlockShape(List.of(
             Shapes.box(5.0D, 6.0D, 5.0D, 11.0D, 13.0D, 11.0D),
             Shapes.box(4.0D, 4.0D, 4.0D, 12.0D, 6.0D, 12.0D),
@@ -70,32 +70,32 @@ public final class Shapes {
             Shapes.box(4.0D, 4.0D, 4.0D, 12.0D, 6.0D, 12.0D),
             Shapes.box(7.0D, 13.0D, 7.0D, 9.0D, 16.0D, 9.0D)
     ));
-    public static final BlockShape CONDUIT = BlockShape.single(Shapes.box(5.0, 5.0, 5.0, 11.0, 11.0, 11.0));
-    public static final BlockShape POINTED_DRIPSTONE = BlockShape.single(Shapes.box(5.0D, 0.0D, 5.0D, 11.0D, 11.0D, 11.0D));
-    public static final BlockShape CHAINS = BlockShape.single(Shapes.box(6.5, 6.5, 0.0, 9.5, 9.5, 16.0));
-    public static final BlockShape RODS = BlockShape.single(Shapes.box(6.0, 6.0, 0.0, 10.0, 10.0, 16.0));
-    public static final BlockShape GENERIC_SKULL = BlockShape.single(Shapes.box(4.0, 0.0, 4.0, 12.0, 8.0, 12.0));
-    public static final BlockShape PIGLIN_SKULL = BlockShape.single(Shapes.box(3.0, 0.0, 3.0, 13.0, 8.0, 13.0));
-    public static final BlockShape WALL_SKULL = BlockShape.single(Shapes.box(4.0, 4.0, 8.0, 12.0, 12.0, 16.0));
-    public static final BlockShape CHEST = BlockShape.single(Shapes.box(1.0D, 0.0D, 1.0D, 15.0D, 14.0D, 15.0D));
-    public static final BlockShape HONEY = BlockShape.single(Shapes.box(1.0, 0.0, 1.0, 15.0, 15.0, 15.0));
+    public static final Shape CONDUIT = Shapes.box(5.0, 5.0, 5.0, 11.0, 11.0, 11.0);
+    public static final Shape POINTED_DRIPSTONE = Shapes.box(5.0D, 0.0D, 5.0D, 11.0D, 11.0D, 11.0D);
+    public static final Shape CHAINS = Shapes.box(6.5, 6.5, 0.0, 9.5, 9.5, 16.0);
+    public static final Shape RODS = Shapes.box(6.0, 6.0, 0.0, 10.0, 10.0, 16.0);
+    public static final Shape GENERIC_SKULL = Shapes.box(4.0, 0.0, 4.0, 12.0, 8.0, 12.0);
+    public static final Shape PIGLIN_SKULL = Shapes.box(3.0, 0.0, 3.0, 13.0, 8.0, 13.0);
+    public static final Shape WALL_SKULL = Shapes.box(4.0, 4.0, 8.0, 12.0, 12.0, 16.0);
+    public static final Shape CHEST = Shapes.box(1.0D, 0.0D, 1.0D, 15.0D, 14.0D, 15.0D);
+    public static final Shape HONEY = Shapes.box(1.0, 0.0, 1.0, 15.0, 15.0, 15.0);
     public static final BlockShape ANVIL = new BlockShape(List.of(
             Shapes.box(2.0, 0.0, 2.0, 14.0, 4.0, 14.0),
             Shapes.box(4.0, 4.0, 3.0, 12.0, 5.0, 13.0),
             Shapes.box(6.0, 5.0, 4.0, 10.0, 10.0, 12.0),
             Shapes.box(3.0, 10.0, 0.0, 13.0, 16.0, 16.0)
     ));
-    public static final BlockShape GLASS_PANE = BlockShape.single(Shapes.column(2.0, 2.0, 0.0, 16.0));
-    public static final BlockShape FENCE_GATE = BlockShape.single(Shapes.box(0.0D, 0.0D, 6.0D, 16.0D, 24.0D, 10.0D));
-    public static final BlockShape FENCE = BlockShape.single(Shapes.column(4.0, 4.0, 0.0, 24.0));
-    public static final BlockShape WALL = BlockShape.single(Shapes.column(8.0, 8.0, 0.0, 24.0));
-    public static final BlockShape CANDLE_0 = BlockShape.single(Shapes.box(7.0, 0.0, 7.0, 9.0, 6.0, 9.0));
-    public static final BlockShape CANDLE_1 = BlockShape.single(Shapes.box(5.0, 0.0, 6.0, 11.0, 6.0, 9.0));
-    public static final BlockShape CANDLE_2 = BlockShape.single(Shapes.box(5.0, 0.0, 6.0, 10.0, 6.0, 11.0));
-    public static final BlockShape CANDLE_3 = BlockShape.single(Shapes.box(5.0, 0.0, 5.0, 11.0, 6.0, 10.0));
-    public static final BlockShape MUD = BlockShape.single(Shapes.column(16.0, 16.0, 0.0, 14.0));
-    public static final BlockShape BIG_DRIPLEAF_NONE = BlockShape.single(Shapes.box(0.0D, 11.0D, 0.0D, 16.0D, 15.0D, 16.0D));
-    public static final BlockShape BIG_DRIPLEAF_PARTIAL = BlockShape.single(Shapes.box(0.0D, 11.0D, 0.0D, 16.0D, 13.0D, 16.0D));
+    public static final Shape GLASS_PANE = Shapes.column(2.0, 2.0, 0.0, 16.0);
+    public static final Shape FENCE_GATE = Shapes.box(0.0D, 0.0D, 6.0D, 16.0D, 24.0D, 10.0D);
+    public static final Shape FENCE = Shapes.column(4.0, 4.0, 0.0, 24.0);
+    public static final Shape WALL = Shapes.column(8.0, 8.0, 0.0, 24.0);
+    public static final Shape CANDLE_0 = Shapes.box(7.0, 0.0, 7.0, 9.0, 6.0, 9.0);
+    public static final Shape CANDLE_1 = Shapes.box(5.0, 0.0, 6.0, 11.0, 6.0, 9.0);
+    public static final Shape CANDLE_2 = Shapes.box(5.0, 0.0, 6.0, 10.0, 6.0, 11.0);
+    public static final Shape CANDLE_3 = Shapes.box(5.0, 0.0, 5.0, 11.0, 6.0, 10.0);
+    public static final Shape MUD = Shapes.column(16.0, 16.0, 0.0, 14.0);
+    public static final Shape BIG_DRIPLEAF_NONE = Shapes.box(0.0D, 11.0D, 0.0D, 16.0D, 15.0D, 16.0D);
+    public static final Shape BIG_DRIPLEAF_PARTIAL = Shapes.box(0.0D, 11.0D, 0.0D, 16.0D, 13.0D, 16.0D);
 
     public static BlockShape asBlockShape(final Shape shape) {
         if (shape instanceof BlockShape blockShape) {
