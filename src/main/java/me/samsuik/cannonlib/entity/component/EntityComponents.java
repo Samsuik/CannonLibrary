@@ -57,7 +57,7 @@ public final class EntityComponents {
     }
 
     public static Component<Entity> transform(final int runAt, final BiConsumer<Entity, Integer> transform) {
-        return new TransformComponent(transform).once().afterOrAtTick(runAt);
+        return new TransformComponent(transform).atTick(runAt);
     }
 
     public static Component<Entity> cloneOne() {
