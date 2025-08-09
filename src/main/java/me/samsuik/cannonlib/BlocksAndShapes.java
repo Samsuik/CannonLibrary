@@ -16,7 +16,7 @@ import me.samsuik.cannonlib.physics.vec3.Vec3i;
 public final class BlocksAndShapes {
     private final Map<Vec3i, Section> sections = new HashMap<>();
 
-        public void setBlock(final Vec3i position, final Block block) {
+    public void setBlock(final Vec3i position, final Block block) {
         final Vec3i sectionPosition = sectionPosition(position);
         this.sections.compute(sectionPosition, (sectionPos, section) -> {
             if (section == null) {
@@ -100,9 +100,9 @@ public final class BlocksAndShapes {
                 }
 
                 final Vec3i sectionCount = this.sectionCount;
-                final int x = sectionIndex % sectionCount.x();
+                final int x = sectionIndex  % sectionCount.x();
                 final int y = (sectionIndex / sectionCount.x()) % sectionCount.y();
-                final int z = sectionIndex / (sectionCount.x() * sectionCount.y());
+                final int z = sectionIndex  / (sectionCount.x() * sectionCount.y());
 
                 final Vec3i sectionPosition = this.minSection.add(x, y, z);
                 final Section section = BlocksAndShapes.this.sections.get(sectionPosition);
