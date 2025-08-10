@@ -134,7 +134,6 @@ public interface Component<U extends ComponentsHolder<?>> {
                     this.times = 0;
                 }
                 if (this.times++ < limit) {
-                    // user.removeCurrentComponent();
                     success = Component.this.action(user, tick);
                 }
                 return success;

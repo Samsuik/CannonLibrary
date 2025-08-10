@@ -199,18 +199,18 @@ public final class AABB implements Shape {
     }
 
     private static boolean clipPoint(
-            double distanceSide,
-            double distanceOtherA,
-            double distanceOtherB,
-            double minSide,
-            double maxSide,
-            double minOtherA,
-            double maxOtherA,
-            double minOtherB,
-            double maxOtherB,
-            double startSide,
-            double startOtherA,
-            double startOtherB
+            final double distanceSide,
+            final double distanceOtherA,
+            final double distanceOtherB,
+            final double minSide,
+            final double maxSide,
+            final double minOtherA,
+            final double maxOtherA,
+            final double minOtherB,
+            final double maxOtherB,
+            final double startSide,
+            final double startOtherA,
+            final double startOtherB
     ) {
         final double side;
         if (distanceSide < -1.0e-7) {
@@ -221,10 +221,15 @@ public final class AABB implements Shape {
             return false;
         }
 
-        double d = (side - startSide) / distanceSide;
-        double d1 = startOtherA + d * distanceOtherA;
-        double d2 = startOtherB + d * distanceOtherB;
-        return 0.0 < d && minOtherA - 1.0E-7 < d1 && d1 < maxOtherA + 1.0E-7 && minOtherB - 1.0E-7 < d2 && d2 < maxOtherB + 1.0E-7;
+        final double t = (side - startSide) / distanceSide;
+        if (t < 0.0) {
+            return false;
+        }
+
+        final double clippedOtherA = startOtherA + t * distanceOtherA;
+        final double clippedOtherB = startOtherB + t * distanceOtherB;
+        return minOtherA - 1.0E-7 < clippedOtherA && maxOtherA + 1.0E-7 >= clippedOtherA
+            && minOtherB - 1.0E-7 < clippedOtherB && maxOtherB + 1.0E-7 >= clippedOtherB;
     }
 
     public double collideX(final AABB entityBB, final double movement) {

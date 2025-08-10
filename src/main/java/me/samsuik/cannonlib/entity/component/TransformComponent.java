@@ -10,7 +10,7 @@ public final class TransformComponent implements SimpleComponent<Entity> {
     private static final AtomicInteger TRANSFORM_COUNTER = new AtomicInteger();
     private final BiConsumer<Entity, Integer> transformEntity;
 
-    TransformComponent(final BiConsumer<Entity, Integer> transform) {
+    public TransformComponent(final BiConsumer<Entity, Integer> transform) {
         this.transformEntity = transform;
     }
 

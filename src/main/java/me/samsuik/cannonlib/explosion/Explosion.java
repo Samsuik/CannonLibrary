@@ -67,22 +67,22 @@ public final class Explosion {
     }
 
     public static Set<Vec3i> explode(
-        final Entity entity, 
-        final World world, 
-        final Obstruction obstructionCache, 
-        final int count, 
-        final int flags
+            final Entity entity, 
+            final World world, 
+            final Obstruction obstructionCache, 
+            final int count, 
+            final int flags
     ) {
         return explode(entity, explosionPosition(entity.position), world, obstructionCache, count, flags);
     }
 
     public static Set<Vec3i> explode(
-        final Entity entity, 
-        final Vec3d explosionPosition, 
-        final World world, 
-        final Obstruction obstructionCache, 
-        final int count,
-        final int flags
+            final Entity entity, 
+            final Vec3d explosionPosition, 
+            final World world, 
+            final Obstruction obstructionCache, 
+            final int count,
+            final int flags
     ) {
         final Set<Vec3i> blocksToExplode;
 
@@ -122,13 +122,13 @@ public final class Explosion {
     }
 
     private static void impactEntitiesUpToCount(
-        final Entity entity, 
-        final Vec3d explosionPosition, 
-        final World world, 
-        final Obstruction obstructionCache, 
-        final boolean obstruction,
-        final int count,
-        final int flags
+            final Entity entity, 
+            final Vec3d explosionPosition, 
+            final World world, 
+            final Obstruction obstructionCache, 
+            final boolean obstruction,
+            final int count,
+            final int flags
     ) {
         final boolean singleImpact = (flags & ExplosionFlags.SINGLE_IMPACT) != 0;
         final int limit = count * ExplosionFlags.readData(flags, 1);
