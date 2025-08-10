@@ -22,7 +22,7 @@ public final class Water implements FluidInteraction {
         final Block blockBelow = world.getBlockAt(blockPosBelow);
         
         if (blockBelow == null || blockBelow.replace() && !blockBelow.has(this)) {
-            world.setBlock(blockPosBelow, Blocks.WATER);
+            world.setBlock(blockPosBelow, Blocks.WATER.interaction(this));
         } else if (block == Blocks.WATER_SOURCE || !blockBelow.replace()) {
             for (final Rotation rotation : Rotation.values()) {
                 if (rotation.getAxis().isY()) {
@@ -32,7 +32,7 @@ public final class Water implements FluidInteraction {
                 final Vec3i adjacentPosition = position.move(rotation);
                 final Block adjacentBlock = world.getBlockAt(adjacentPosition);
                 if (adjacentBlock == null || adjacentBlock.replace() && !(blockBelow.interaction() instanceof FluidInteraction)) {
-                    world.setBlock(adjacentPosition, Blocks.WATER);
+                    world.setBlock(adjacentPosition, Blocks.WATER.interaction(this));
                 }
             }
         }

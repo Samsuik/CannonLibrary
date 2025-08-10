@@ -7,6 +7,12 @@ import me.samsuik.cannonlib.physics.Rotation;
 import me.samsuik.cannonlib.physics.vec3.Vec3i;
 
 public final class Lava implements FluidInteraction {
+    private final int flowSpeed;
+
+    public Lava(final int flowSpeed) {
+        this.flowSpeed = flowSpeed;
+    }
+
     @Override
     public int onBlockUpdate(final World world, final Vec3i position, final Block block) {
         for (final Rotation rotation : Rotation.values()) {
@@ -22,7 +28,7 @@ public final class Lava implements FluidInteraction {
             }
         }
 
-        return 30;
+        return this.flowSpeed;
     }
 
     @Override
@@ -36,7 +42,7 @@ public final class Lava implements FluidInteraction {
 
         if (blockBelow == null || blockBelow.replace() && !blockBelow.has(this)) {
             final boolean solidify = blockBelow == Blocks.WATER || blockBelow == Blocks.WATER_SOURCE;
-            world.setBlock(blockPosBelow, solidify ? Blocks.STONE : Blocks.LAVA);
+            world.setBlock(blockPosBelow, solidify ? Blocks.STONE : Blocks.LAVA.interaction(this));
         } else if (block == Blocks.WATER_SOURCE || !blockBelow.replace()) {
             for (final Rotation rotation : Rotation.values()) {
                 if (rotation.getAxis().isY()) {
@@ -46,7 +52,7 @@ public final class Lava implements FluidInteraction {
                 final Vec3i adjacentPosition = position.move(rotation);
                 final Block adjacentBlock = world.getBlockAt(adjacentPosition);
                 if (adjacentBlock == null || adjacentBlock.replace() && !(blockBelow.interaction() instanceof FluidInteraction)) {
-                    world.setBlock(adjacentPosition, Blocks.LAVA);
+                    world.setBlock(adjacentPosition, Blocks.LAVA.interaction(this));
                 }
             }
         }
