@@ -85,7 +85,6 @@ public final class Explosion {
             final int flags
     ) {
         final Set<Vec3i> blocksToExplode;
-
         if ((flags & ExplosionFlags.DESTROY_BLOCKS) != 0) {
             blocksToExplode = Explosion.calculateExplodedPositions(world, explosionPosition, flags);
         } else {
@@ -93,7 +92,6 @@ public final class Explosion {
         }
 
         final boolean obstruction = (flags & ExplosionFlags.OBSTRUCTION) != 0;
-
         if ((flags & ExplosionFlags.ENTITIES_UP_TO_COUNT) != 0) {
             impactEntitiesUpToCount(entity, explosionPosition, world, obstructionCache, obstruction, count, flags);
         } else {
@@ -104,11 +102,11 @@ public final class Explosion {
     }
 
     private static void impactEntities(
-        final Entity entity, 
-        final Vec3d explosionPosition, 
-        final World world, 
-        final Obstruction obstructionCache, 
-        final boolean obstruction
+            final Entity entity,
+            final Vec3d explosionPosition,
+            final World world,
+            final Obstruction obstructionCache,
+            final boolean obstruction
     ) {
         for (final Entity otherEntity : world.getEntityList()) {
             if (otherEntity != entity) {
@@ -118,7 +116,6 @@ public final class Explosion {
                 otherEntity.momentum = otherEntity.momentum.add(impact);
             }
         }
-
     }
 
     private static void impactEntitiesUpToCount(
