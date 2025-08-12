@@ -56,6 +56,10 @@ public record ClipInformation(List<ClippedBlock> clips, List<StackHeight> stackH
 
         builder.append(stackInfo).append("\n");
 
+        if (wallState.pushedWater()) {
+            builder.append("OSRB");
+        }
+
         if (wallState.isWaterBelowGuider()) {
             builder.append("Pushed water at or below barrel height");
         }
