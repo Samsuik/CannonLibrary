@@ -1,6 +1,7 @@
 package me.samsuik.cannonlib.examples;
 
 import me.samsuik.cannonlib.World;
+import me.samsuik.cannonlib.block.Blocks;
 import me.samsuik.cannonlib.entity.component.EntityComponents;
 import me.samsuik.cannonlib.entity.component.EntityConditions;
 import me.samsuik.cannonlib.entity.helpers.CannonRatio;
@@ -10,22 +11,20 @@ import me.samsuik.cannonlib.physics.vec3.Vec3i;
 
 import java.util.List;
 
-public final class CannonRatioExample {
+public final class OSRBClippingExample {
     private static final String RATIO = """
-            // "1.2s 384 4os-osrb" by canabutter (https://discord.com/channels/778715854513635359/1373025771660251176/1373025771660251176) 
-            Sand Power      Amount: -    Tick: 0
-              rev           Amount: 1    Tick: 9
-              sand          Amount: 381  Tick: 10+
+            // "0.7 384 osrb 1 above barrel" (https://discord.com/channels/778715854513635359/1404593768493219871)
+            Sand Power      Amount: -    Tick: 0.0
+              sand          Amount: 381  Tick: 8.3
+              rev           Amount: 10   Tick: 7.1
             
-            Hammer Power    Amount: -    Tick: 4
-              hybrid sand   Amount: 1    Tick: 4-8
-              hammer        Amount: 458  Tick: 10
-              stopper       Amount: 13   Tick: 16
-              os sand       Amount: 4    Tick: 16-17
-              os hammer     Amount: 8    Tick: 18
-              osrb sand     Amount: 9    Tick: 18
-              osrb hammer   Amount: 14   Tick: 19
-              scatter       Amount: -    Tick: 24
+            Hammer Power    Amount: -    Tick: 4.0
+              hammer        Amount: 561  Tick: 8.1
+              hybrid sand 1 Amount: 2    Tick: 6.3
+              hybrid sand 2 Amount: 1    Tick: 7.3
+              osrb sand     Amount: 9    Tick: 8.3
+              osrb hammer   Amount: 31   Tick: 9.1
+              scatter       Amount: 6    Tick: 15
             """;
     private static final Vec3i GUIDER = new Vec3i(0, 310, 0);
 
@@ -42,6 +41,12 @@ public final class CannonRatioExample {
                                 .condition(EntityConditions.named("scatter"))
                 )
         );
+
+        for (int y = 300; y < 340; ++y) {
+            world.setBlock(new Vec3i(60, y, 0), Blocks.COBBLESTONE, false);
+            world.setBlock(new Vec3i(59, y, 0), Blocks.WATER, false);
+            world.setBlock(new Vec3i(59, y, 1), Blocks.WATER, false);
+        }
 
         final ClipInformation clipInfo = ClippingBlocks.getClipInformation(world, GUIDER, true);
         System.out.println(clipInfo.otherInformation(GUIDER));
