@@ -1,8 +1,10 @@
 package me.samsuik.cannonlib.physics.vec3;
 
 public record Vec3d(double x, double y, double z) implements Vec3<Vec3d> {
+    private static final Vec3d ZERO = new Vec3d(0.0, 0.0, 0.0);
+
     public static Vec3d zero() {
-        return new Vec3d(0.0, 0.0, 0.0);
+        return ZERO;
     }
 
     public static Vec3d xyz(final double n) {

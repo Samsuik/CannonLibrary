@@ -11,6 +11,13 @@ public record Vec3i(int x, int y, int z) implements Vec3<Vec3i> {
         return new Vec3i(n, n, n);
     }
 
+    public static Vec3i from(final double x, final double y, final double z) {
+        final int floorX = (int) Math.floor(x);
+        final int floorY = (int) Math.floor(y);
+        final int floorZ = (int) Math.floor(z);
+        return new Vec3i(floorX, floorY, floorZ);
+    }
+
     public Vec3i setX(final int newX) {
         return new Vec3i(newX, this.y, this.z);
     }

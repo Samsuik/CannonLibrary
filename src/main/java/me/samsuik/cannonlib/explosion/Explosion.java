@@ -47,21 +47,30 @@ public final class Explosion {
                 continue;
             }
 
-            final Vec3d position = entry.getKey().toVec3d().add(0.5, 0.5, 0.5);
-            final Vec3d difference = position.sub(explosionPosition);
-            final double magnitude = difference.magnitude();
+            final double posX = entry.getKey().x() + 0.5;
+            final double posY = entry.getKey().y() + 0.5;
+            final double posZ = entry.getKey().z() + 0.5;
+            final double diffX = posX - explosionPosition.x();
+            final double diffY = posY - explosionPosition.y();
+            final double diffZ = posZ - explosionPosition.z();
 
-            if (magnitude > maxRange) {
+            final double distance = Math.sqrt(diffX*diffX + diffY*diffY + diffZ*diffZ);
+            if (distance > maxRange) {
                 continue;
             }
 
-            final Vec3d step = difference.div(magnitude).scale(0.3f);
+            final double stepX = (diffX / distance) * 0.3f;
+            final double stepY = (diffY / distance) * 0.3f;
+            final double stepZ = (diffZ / distance) * 0.3f;
             final float variation = getVariation(flags);
 
             float strength = 4.0f * (0.7f + variation * 0.7f);
-            Vec3d stepPosition = explosionPosition;
+            double stepPosX = explosionPosition.x();
+            double stepPosY = explosionPosition.y();
+            double stepPosZ = explosionPosition.z();
+
             do {
-                final Vec3i blockPos = stepPosition.toVec3i();
+                final Vec3i blockPos = Vec3i.from(stepPosX, stepPosY, stepPosZ);
                 final Block block = blocks.get(blockPos);
 
                 if (block != null) {
@@ -72,7 +81,9 @@ public final class Explosion {
                 }
 
                 strength -= 0.22500001f;
-                stepPosition = stepPosition.add(step);
+                stepPosX += stepX;
+                stepPosY += stepY;
+                stepPosZ += stepZ;
             } while (strength > 0.0f);
         }
 
@@ -177,10 +188,12 @@ public final class Explosion {
             final Obstruction obstructionCache,
             final boolean obstruction
     ) {
-        final Vec3d difference = position.sub(explosionPosition);
-        final double magnitude = difference.magnitude();
+        final double diffX = position.x() - explosionPosition.x();
+        final double diffY = position.y() - explosionPosition.y();
+        final double diffZ = position.z() - explosionPosition.z();
+        final double distance = Math.sqrt(diffX*diffX + diffY*diffY + diffZ*diffZ);
 
-        if (magnitude == 0.0 || magnitude > 8.0) {
+        if (distance == 0.0 || distance > 8.0) {
             return Vec3d.zero();
         }
 
@@ -191,8 +204,11 @@ public final class Explosion {
             blockDensity = 1.0f;
         }
 
-        final double exposure = (1.0 - magnitude / 8.0) * blockDensity;
-        final Vec3d normalised = difference.div(magnitude);
-        return normalised.scale(exposure);
+        final double exposure = (1.0 - distance / 8.0) * blockDensity;
+        final double impactX = (diffX / distance) * exposure;
+        final double impactY = (diffY / distance) * exposure;
+        final double impactZ = (diffZ / distance) * exposure;
+
+        return new Vec3d(impactX, impactY, impactZ);
     }
 }

@@ -50,7 +50,11 @@ public interface Vec3<T extends Vec3<?>> {
     }
 
     default Vec3d center() {
-        return this.floor().add(0.5, 0.0, 0.5);
+        return this.center(false);
+    }
+
+    default Vec3d center(final boolean y) {
+        return this.floor().add(0.5, y ? 0.5 : 0.0, 0.5);
     }
 
     default Vec3d center(final Rotation rotation) {
@@ -104,9 +108,6 @@ public interface Vec3<T extends Vec3<?>> {
     }
 
     default Vec3i toVec3i() {
-        int floorX = (int) Math.floor(this.getX());
-        int floorY = (int) Math.floor(this.getY());
-        int floorZ = (int) Math.floor(this.getZ());
-        return new Vec3i(floorX, floorY, floorZ);
+        return Vec3i.from(this.getX(), this.getY(), this.getZ());
     }
 }
