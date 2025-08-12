@@ -62,10 +62,6 @@ public final class EntityComponents {
         return new TransformComponent(transform).atTick(runAt);
     }
 
-    public static Component<Entity> cloneOne() {
-        return clone(0, 1);
-    }
-
     public static Component<Entity> cloneInclusive(final int runAt, final int amount) {
         return clone(runAt, amount - 1);
     }
@@ -91,7 +87,7 @@ public final class EntityComponents {
     }
 
     public static Component<Entity> explode(final int fuse, final int amount, final int flags) {
-        return new ExplodeComponent(amount, flags).afterOrAtTick(fuse);
+        return new ExplodeComponent(amount, flags).atTick(fuse);
     }
 
     public static Component<Entity> impact(final int runAt, final Vec3d source, final int amount) {
