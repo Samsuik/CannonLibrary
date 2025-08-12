@@ -8,6 +8,8 @@ import me.samsuik.cannonlib.component.SimpleComponent;
 import me.samsuik.cannonlib.entity.Entity;
 import me.samsuik.cannonlib.data.DataKey;
 import me.samsuik.cannonlib.entity.EntityDataKeys;
+import me.samsuik.cannonlib.explosion.Explosion;
+import me.samsuik.cannonlib.physics.vec3.Vec3d;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,6 +92,14 @@ public final class EntityComponents {
 
     public static Component<Entity> explode(final int fuse, final int amount, final int flags) {
         return new ExplodeComponent(amount, flags).afterOrAtTick(fuse);
+    }
+
+    public static Component<Entity> impact(final int runAt, final Vec3d source, final int amount) {
+        return impact(source, amount).atTick(runAt);
+    }
+
+    public static Component<Entity> impact(final Vec3d source, final int amount) {
+        return Component.user(entity -> entity.momentum.add(Explosion.impact(entity.position, source).scale(amount)));
     }
 
     public static Component<Entity> removeAtTick(final int when) {
