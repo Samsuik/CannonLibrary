@@ -40,6 +40,7 @@ public final class CannonRatio {
         world.addGlobalCollision(Shapes.floor(-64));
         world.addGlobalCollision(Shapes.block(0, guider, 0).expandTo(new Vec3d(-64, 400, 0)));
         world.addGlobalCollision(Shapes.plane(64, 0, 0));
+        world.doBlockPhysics(true);
 
         loadRatioIntoWorld(
                 ratioString,

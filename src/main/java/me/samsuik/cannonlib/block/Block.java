@@ -7,9 +7,9 @@ import me.samsuik.cannonlib.physics.shape.BlockShape;
 import me.samsuik.cannonlib.physics.shape.Shape;
 import me.samsuik.cannonlib.physics.shape.Shapes;
 
-public record Block(String name, BlockShape shape, Interaction interaction, float strength, boolean replace) {
+public record Block(String name, BlockShape shape, Interaction interaction, float strength, int durability, boolean replace) {
     public static Block from(final String name, final Shape shape, final float strength) {
-        return new Block(name, Shapes.asBlockShape(shape), BlockInteractions.NONE, strength, false);
+        return new Block(name, Shapes.asBlockShape(shape), BlockInteractions.NONE, strength, 1, false);
     }
 
     public static Builder builder() {
@@ -17,23 +17,27 @@ public record Block(String name, BlockShape shape, Interaction interaction, floa
     }
 
     public Block name(final String newName) {
-        return new Block(newName, this.shape, this.interaction, this.strength, this.replace);
+        return new Block(newName, this.shape, this.interaction, this.strength, this.durability, this.replace);
     }
 
     public Block shape(final BlockShape shape) {
-        return new Block(this.name, shape, this.interaction, this.strength, this.replace);
+        return new Block(this.name, shape, this.interaction, this.strength, this.durability, this.replace);
     }
 
     public Block interaction(final Interaction interaction) {
-        return new Block(this.name, this.shape, interaction, this.strength, this.replace);
+        return new Block(this.name, this.shape, interaction, this.strength, this.durability, this.replace);
     }
 
     public Block strength(final float strength) {
-        return new Block(this.name, this.shape, this.interaction, strength, this.replace);
+        return new Block(this.name, this.shape, this.interaction, strength, this.durability, this.replace);
+    }
+
+    public Block durability(final int durability) {
+        return new Block(this.name, this.shape, this.interaction, this.strength, durability, this.replace);
     }
 
     public Block replace(final boolean replace) {
-        return new Block(this.name, this.shape, this.interaction, this.strength, replace);
+        return new Block(this.name, this.shape, this.interaction, this.strength, this.durability, replace);
     }
 
     public Block rotate(final Rotation... rotations) {
@@ -41,16 +45,23 @@ public record Block(String name, BlockShape shape, Interaction interaction, floa
         for (final Rotation rotation : rotations) {
             rotatedShape = rotatedShape.rotate(rotation);
         }
-        return new Block(this.name, rotatedShape, this.interaction, this.strength, this.replace);
+        return this.shape(rotatedShape);
     }
 
     public Block rotate(final int degreesX, final int degreesY) {
-        final BlockShape rotatedShape = this.shape.rotate(degreesX, degreesY);
-        return new Block(this.name, rotatedShape, this.interaction, this.strength, this.replace);
+        return this.shape(this.shape.rotate(degreesX, degreesY));
     }
 
     public Block flip(final Rotation.RotationAxis axis) {
-        return new Block(this.name, this.shape.flip(axis), this.interaction, this.strength, this.replace);
+        return this.shape(this.shape.flip(axis));
+    }
+
+    public Block damage() {
+        final int newDurability = this.durability - 1;
+        if (newDurability <= 0) {
+            return null;
+        }
+        return this.durability(newDurability);
     }
 
     public float blastResistance() {
@@ -66,6 +77,7 @@ public record Block(String name, BlockShape shape, Interaction interaction, floa
         private BlockShape shape = Shapes.EMPTY_SHAPE;
         private Interaction interaction = BlockInteractions.NONE;
         private float strength = 0.0f;
+        private int durability = 1;
         private boolean replace = false;
 
         private Builder() {}
@@ -90,6 +102,11 @@ public record Block(String name, BlockShape shape, Interaction interaction, floa
             return this;
         }
 
+        public Builder durability(final int durability) {
+            this.durability = durability;
+            return this;
+        }
+
         public Builder replace() {
             this.replace = true;
             return this;
@@ -97,7 +114,7 @@ public record Block(String name, BlockShape shape, Interaction interaction, floa
 
         public Block build() {
             assert this.name != null : "name must be provided";
-            return new Block(this.name, this.shape, this.interaction, this.strength, this.replace);
+            return new Block(this.name, this.shape, this.interaction, this.strength, this.durability, this.replace);
         }
     }
 }

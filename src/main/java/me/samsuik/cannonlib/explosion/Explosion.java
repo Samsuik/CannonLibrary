@@ -13,6 +13,24 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public final class Explosion {
     private static final double EXPLOSION_POSITION_OFFSET = 0.98f * 0.0625;
+    private static boolean moreVariation = false;
+
+    public static void setMoreVariation(boolean moreVariation) {
+        Explosion.moreVariation = moreVariation;
+    }
+
+    private static float getVariation(final int flags) {
+        if ((flags & ExplosionFlags.CONSISTENT_RADIUS) != 0) {
+            return 0.7f;
+        }
+
+        final float variation = ThreadLocalRandom.current().nextFloat();
+        if (moreVariation && variation > 0.33f) {
+            return ThreadLocalRandom.current().nextBoolean() ? 1.0f : 0.0f;
+        }
+
+        return variation;
+    }
 
     public static Vec3d explosionPosition(final Vec3d position) {
         return position.add(0.0, EXPLOSION_POSITION_OFFSET, 0.0);
@@ -38,12 +56,7 @@ public final class Explosion {
             }
 
             final Vec3d step = difference.div(magnitude).scale(0.3f);
-            final float variation;
-            if ((flags & ExplosionFlags.CONSISTENT_RADIUS) != 0) {
-                variation = 0.7f;
-            } else {
-                variation = ThreadLocalRandom.current().nextFloat();
-            }
+            final float variation = getVariation(flags);
 
             float strength = 4.0f * (0.7f + variation * 0.7f);
             Vec3d stepPosition = explosionPosition;

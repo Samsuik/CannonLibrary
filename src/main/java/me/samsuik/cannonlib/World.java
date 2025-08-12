@@ -90,9 +90,13 @@ public final class World {
     }
 
     public void setBlock(final Vec3i position, final Block block) {
+        this.setBlock(position, block, true);
+    }
+
+    public void setBlock(final Vec3i position, final Block block, final boolean update) {
         this.blocks.setBlock(position, block);
 
-        if (this.blockUpdates) {
+        if (update && this.blockUpdates) {
             this.updateBlocksAroundPos(position, block);
         }
     }
@@ -152,6 +156,8 @@ public final class World {
 
     public World snapshot() {
         final World world = new World();
+
+        world.doBlockPhysics(this.blockUpdates);
 
         // deep copy all entities
         for (final Entity entity : this.entityList) {

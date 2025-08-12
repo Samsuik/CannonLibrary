@@ -15,8 +15,8 @@ public final class AABB implements Shape {
     public final double maxY;
     public final double maxZ;
 
-    public AABB(final Vec3d min, final Vec3d max) {
-        this(min.x(), min.y(), min.z(), max.x(), max.y(), max.z());
+    public AABB(final Vec3<?> min, final Vec3<?> max) {
+        this(min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ());
     }
 
     public AABB(
@@ -94,7 +94,7 @@ public final class AABB implements Shape {
         );
     }
 
-    public AABB expandTo(final Vec3d pos) {
+    public AABB expandTo(final Vec3<?> pos) {
         return this.expandTo(new AABB(pos, pos));
     }
 

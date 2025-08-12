@@ -51,7 +51,7 @@ public final class ExplodeComponent implements Component<Entity> {
 
             // Blow up blocks
             for (final Vec3i blockPos : blocksToExplode) {
-                world.removeBlock(blockPos);
+                world.setBlock(blockPos, world.getBlockAt(blockPos).damage());
             }
 
             if (!blocksToExplode.isEmpty() && (flags & ExplosionFlags.PAPER_OPTIMISE_EXP) == 0) {
