@@ -34,7 +34,7 @@ public record ClipInformation(List<ClippedBlock> clips, List<StackHeight> stackH
                     .filter(severity -> severity == Severity.SEVERE)
                     .count();
 
-            builder.append("Clips: %sx\n".formatted(severeClips));
+            builder.append("Clips (Severe: %sx, Minor: %sx):\n".formatted(severeClips, this.clips.size() - severeClips));
             for (final ClippedBlock clippedBlock : this.clips) {
                 builder.append("-> %s\n".formatted(clippedBlock.information(guiderPos, this.stackTop)));
             }

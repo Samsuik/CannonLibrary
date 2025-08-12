@@ -16,26 +16,30 @@ import java.util.*;
 public final class ClippingBlocks {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClippingBlocks.class);
     private static final List<Block> CLIP_BLOCKS = List.of(
-            Blocks.BEDROCK,
+//            Blocks.BEDROCK,
+//            Blocks.SLAB.rotate(Rotation.UP),
+//            Blocks.TOP_TRAPDOOR,
+//            Blocks.CEILING_AMETHYST_CLUSTER,
+//            Blocks.CEILING_GRINDSTONE,
+//            Blocks.CEILING_BELL,
+//            Blocks.CHAINS,
+//            Blocks.RODS,
             Blocks.COBBLESTONE,
             Blocks.OBSIDIAN.durability(1).name("obsidian 1x"),
             Blocks.OBSIDIAN.durability(2).name("obsidian 2x"),
             Blocks.OBSIDIAN.durability(3).name("obsidian 3x"),
             Blocks.OBSIDIAN.durability(4).name("obsidian 4x"),
             Blocks.OBSIDIAN.durability(5).name("obsidian 5x")
-            /*,
-            Blocks.SLAB.rotate(Rotation.UP)*//*,
-            Blocks.TOP_TRAPDOOR,
-            Blocks.CEILING_AMETHYST_CLUSTER,
-            Blocks.CEILING_GRINDSTONE,
-            Blocks.CEILING_BELL,
-            Blocks.CHAINS,
-            Blocks.RODS*/
     );
+
+    public static ClipInformation getClipInformation(final World world, final Vec3i guiderPos, final boolean checkConsistency) {
+        return getClipInformation(world, guiderPos, CLIP_BLOCKS, checkConsistency);
+    }
 
     public static ClipInformation getClipInformation(
             final World world,
             final Vec3i guiderPos,
+            final List<Block> blocks,
             final boolean checkConsistency
     ) {
         final World snapshot = world.snapshot();
@@ -57,7 +61,7 @@ public final class ClippingBlocks {
         final WallState wallState = findWallBlocks(world, snapshot, stackPos, highestClipY, guiderPos.y());
         final List<ClippedBlock> clippedBlocks = new ArrayList<>();
 
-        for (final Block block : CLIP_BLOCKS) {
+        for (final Block block : blocks) {
             for (int blockY = guiderPos.y(); blockY <= highestClipY; ++blockY) {
                 final Vec3i position = stackPos.setY(blockY);
                 final Optional<ClippedBlock> clip = clipWithBlock(
