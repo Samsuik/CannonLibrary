@@ -57,7 +57,7 @@ public record ClipInformation(List<ClippedBlock> clips, List<StackHeight> stackH
         builder.append(stackInfo).append("\n");
 
         if (wallState.pushedWater()) {
-            builder.append("OSRB");
+            builder.append("OSRB\n");
         }
 
         if (wallState.isWaterBelowGuider()) {
