@@ -3,6 +3,7 @@ package me.samsuik.cannonlib.entity.helpers;
 import me.samsuik.cannonlib.block.Blocks;
 import me.samsuik.cannonlib.component.Component;
 import me.samsuik.cannonlib.entity.Entity;
+import me.samsuik.cannonlib.entity.EntityHelpers;
 import me.samsuik.cannonlib.entity.component.EntityComponents;
 import me.samsuik.cannonlib.explosion.ExplosionFlags;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
@@ -44,7 +45,7 @@ public final class MultiTnt {
                         .afterOrAtTick(wait)
         );
 
-        return Entity.create(entityConsumer, Component.concatLists(multiComponents, components));
+        return EntityHelpers.create(entityConsumer, Component.concatLists(multiComponents, components));
     }
 
     private static Map<MultiTag, Integer> multiTags(final String multiString) {

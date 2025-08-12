@@ -5,6 +5,7 @@ import me.samsuik.cannonlib.block.Block;
 import me.samsuik.cannonlib.block.Blocks;
 import me.samsuik.cannonlib.component.Component;
 import me.samsuik.cannonlib.entity.Entity;
+import me.samsuik.cannonlib.entity.EntityHelpers;
 import me.samsuik.cannonlib.entity.component.EntityComponents;
 import me.samsuik.cannonlib.entity.component.EntityConditions;
 import me.samsuik.cannonlib.entity.EntityDataKeys;
@@ -177,7 +178,7 @@ public final class CannonRatio {
                 components.add(EntityComponents.explode(gameTicks, this.amount, explosionFlags));
             }
 
-            return Entity.create(entity -> entity.position = this.position, components);
+            return EntityHelpers.create(entity -> entity.position = this.position, components);
         }
     }
 }

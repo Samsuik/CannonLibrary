@@ -1,6 +1,12 @@
 package me.samsuik.cannonlib.component;
 
+import java.util.List;
+
 public interface ComponentsHolder<U extends ComponentsHolder<?>> {
+    default void addAllComponents(final List<Component<U>> components) {
+        this.getComponents().addAllComponents(components);
+    }
+
     default void addComponent(final Component<U> component) {
         this.getComponents().addComponent(component);
     }

@@ -3,7 +3,6 @@ package me.samsuik.cannonlib.entity;
 import me.samsuik.cannonlib.World;
 import me.samsuik.cannonlib.block.Block;
 import me.samsuik.cannonlib.block.Blocks;
-import me.samsuik.cannonlib.component.Component;
 import me.samsuik.cannonlib.component.ComponentsHolder;
 import me.samsuik.cannonlib.component.Components;
 import me.samsuik.cannonlib.data.KeyedDataStorage;
@@ -12,21 +11,7 @@ import me.samsuik.cannonlib.entity.helpers.Alignment;
 import me.samsuik.cannonlib.physics.Rotation;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
 
-import java.util.List;
-import java.util.function.Consumer;
-
 public final class Entity implements ComponentsHolder<Entity>, KeyedDataStorageHolder {
-    public static Entity withComponents(final List<Component<Entity>> components) {
-        return create(entity -> {}, components);
-    }
-
-    public static Entity create(final Consumer<Entity> consumer, final List<Component<Entity>> components) {
-        final Entity entity = new Entity();
-        consumer.accept(entity);
-        components.forEach(entity::addComponent);
-        return entity;
-    }
-
     public static EntityBuilder builder() {
         return new EntityBuilder();
     }

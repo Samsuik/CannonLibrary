@@ -19,6 +19,11 @@ public final class Components<U extends ComponentsHolder<?>> {
         }
     }
 
+    public void addAllComponents(final List<Component<U>> components) {
+        this.copyForWrite();
+        this.components.addAll(components);
+    }
+
     public void addComponent(final Component<U> component) {
         this.copyForWrite();
         this.components.add(component);

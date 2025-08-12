@@ -1,11 +1,60 @@
 package me.samsuik.cannonlib.entity;
 
+import me.samsuik.cannonlib.block.Block;
 import me.samsuik.cannonlib.component.Component;
+import me.samsuik.cannonlib.entity.component.EntityComponents;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 public final class EntityHelpers {
+    public static Entity withComponents(final List<Component<Entity>> components) {
+        return create(entity -> {}, components);
+    }
+
+    public static Entity create(final Consumer<Entity> consumer, final List<Component<Entity>> components) {
+        final Entity entity = new Entity();
+        consumer.accept(entity);
+        entity.addAllComponents(components);
+        return entity;
+    }
+
+    @SafeVarargs
+    public static Entity createTnt(
+            final Vec3d position,
+            final int fuse,
+            final int amount,
+            final Component<Entity>... extraComponents
+    ) {
+        final List<Component<Entity>> components = List.of(
+                EntityComponents.tick(true, 80),
+                EntityComponents.explode(fuse, amount)
+        );
+        return create(
+                entity -> entity.position = position,
+                Component.concatLists(components, Arrays.asList(extraComponents))
+        );
+    }
+
+    @SafeVarargs
+    public static Entity createFallingBlock(
+            final Vec3d position,
+            final Block block,
+            final int amount,
+            final Component<Entity>... extraComponents
+    ) {
+        final List<Component<Entity>> components = List.of(
+                EntityComponents.tick(true, 80),
+                EntityComponents.fallingBlock(block, amount)
+        );
+        return create(
+                entity -> entity.position = position,
+                Component.concatLists(components, Arrays.asList(extraComponents))
+        );
+    }
+
     public static Entity createFromCannonDebugString(
             final String positionString,
             final String momentumString,
@@ -18,7 +67,7 @@ public final class EntityHelpers {
         final Entity entity = new Entity();
         entity.position = vec3dFromDebugString(debugString, 0);
         entity.momentum = vec3dFromDebugString(debugString, 3);
-        components.forEach(entity::addComponent);
+        entity.addAllComponents(components);
         return entity;
     }
 

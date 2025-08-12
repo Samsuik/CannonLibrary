@@ -72,10 +72,7 @@ public final class EntityBuilder {
             entity.align(blockAlignment.getKey(), blockAlignment.getValue());
         }
 
-        for (final Component<Entity> component : this.components) {
-            entity.getComponents().addComponent(component);
-        }
-
+        entity.addAllComponents(this.components);
         return entity;
     }
 }
