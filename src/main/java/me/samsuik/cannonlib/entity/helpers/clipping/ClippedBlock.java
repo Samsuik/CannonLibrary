@@ -63,7 +63,7 @@ public record ClippedBlock(
         }
 
         if (this.inconsistent) {
-            problems.put("inconsistent", Severity.MINOR);
+            problems.put("inconsistent", Severity.NONE);
         }
 
         return problems;
