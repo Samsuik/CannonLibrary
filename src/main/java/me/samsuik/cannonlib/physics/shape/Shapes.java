@@ -96,6 +96,7 @@ public final class Shapes {
     public static final Shape MUD = Shapes.column(16.0, 16.0, 0.0, 14.0);
     public static final Shape BIG_DRIPLEAF_NONE = Shapes.box(0.0D, 11.0D, 0.0D, 16.0D, 15.0D, 16.0D);
     public static final Shape BIG_DRIPLEAF_PARTIAL = Shapes.box(0.0D, 11.0D, 0.0D, 16.0D, 13.0D, 16.0D);
+    public static final Shape POWDER_SNOW = Shapes.box(0.0, 0.0, 0.0, 1.0, 0.9F, 1.0);
 
     public static BlockShape asBlockShape(final Shape shape) {
         if (shape instanceof BlockShape blockShape) {

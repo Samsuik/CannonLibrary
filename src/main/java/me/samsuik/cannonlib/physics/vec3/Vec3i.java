@@ -1,5 +1,6 @@
 package me.samsuik.cannonlib.physics.vec3;
 
+import me.samsuik.cannonlib.physics.MathUtil;
 import me.samsuik.cannonlib.physics.Rotation;
 
 public record Vec3i(int x, int y, int z) implements Vec3<Vec3i> {
@@ -12,9 +13,9 @@ public record Vec3i(int x, int y, int z) implements Vec3<Vec3i> {
     }
 
     public static Vec3i from(final double x, final double y, final double z) {
-        final int floorX = (int) Math.floor(x);
-        final int floorY = (int) Math.floor(y);
-        final int floorZ = (int) Math.floor(z);
+        final int floorX = MathUtil.floor(x);
+        final int floorY = MathUtil.floor(y);
+        final int floorZ = MathUtil.floor(z);
         return new Vec3i(floorX, floorY, floorZ);
     }
 

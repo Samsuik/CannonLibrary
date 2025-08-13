@@ -4,6 +4,7 @@ import me.samsuik.cannonlib.Collisions;
 import me.samsuik.cannonlib.World;
 import me.samsuik.cannonlib.component.SimpleComponent;
 import me.samsuik.cannonlib.entity.Entity;
+import me.samsuik.cannonlib.entity.EntityDataKeys;
 import me.samsuik.cannonlib.physics.MathUtil;
 import me.samsuik.cannonlib.physics.shape.AABB;
 import me.samsuik.cannonlib.physics.shape.Shape;
@@ -11,19 +12,23 @@ import me.samsuik.cannonlib.physics.shape.Shapes;
 import me.samsuik.cannonlib.physics.vec3.Vec3d;
 
 public final class MovementComponent implements SimpleComponent<Entity> {
-    private final float entitySize;
     private final boolean collisions;
 
-    public MovementComponent(final float entitySize, final boolean collisions) {
-        this.entitySize = entitySize;
+    public MovementComponent(final boolean collisions) {
         this.collisions = collisions;
     }
 
     @Override
     public void action0(final Entity entity, final int tick) {
-        final Vec3d movement = entity.momentum;
+        Vec3d movement = entity.momentum;
+        final Vec3d stuckSpeed = entity.getData(EntityDataKeys.STUCK_SPEED);
+        if (stuckSpeed != null) {
+            movement = movement.mul(stuckSpeed);
+            entity.removeData(EntityDataKeys.STUCK_SPEED);
+        }
+
         final Vec3d relative;
-        if (this.collisions && entity.getWorld() != null) {
+        if (entity.getWorld() != null) {
             relative = this.collide(entity, movement);
         } else {
             relative = movement;
@@ -34,23 +39,22 @@ public final class MovementComponent implements SimpleComponent<Entity> {
             entity.position = entity.position.add(relative);
         }
 
-        final boolean ground;
-        if (this.collisions && !movement.equals(relative)) {
+        if (stuckSpeed != null) {
+            entity.momentum = Vec3d.zero();
+        } else if (!movement.equals(relative)) {
             entity.momentum = new Vec3d(
                     movement.x() == relative.x() ? movement.x() : 0.0,
                     movement.y() == relative.y() ? movement.y() : 0.0,
                     movement.z() == relative.z() ? movement.z() : 0.0
             );
-            ground = movement.y() < 0.0 && movement.y() != relative.y();
-        } else {
-            ground = false;
         }
-        entity.onGround = ground;
+
+        entity.onGround = movement.y() < 0.0 && movement.y() != relative.y();
     }
 
     private Vec3d collide(final Entity entity, final Vec3d movement) {
         final World world = entity.getWorld();
-        AABB entityBB = Shapes.entityBoundingBox(entity.position, this.entitySize);
+        AABB entityBB = Shapes.entityBoundingBox(entity.position, 0.98f);
 
         double moveX = movement.x();
         double moveY = movement.y();
@@ -88,8 +92,14 @@ public final class MovementComponent implements SimpleComponent<Entity> {
         return new Vec3d(moveX, moveY, moveZ);
     }
 
-    private Collisions fetchCollisions(final World world, final AABB entityBB, final double moveX, final double moveY, final double moveZ) {
+    private Collisions fetchCollisions(
+            final World world,
+            final AABB entityBB,
+            final double moveX,
+            final double moveY,
+            final double moveZ
+    ) {
         final AABB collisionBB = entityBB.expandTo(entityBB.move(moveX, moveY, moveZ));
-        return world.getCollisions(collisionBB);
+        return world.getCollisions(collisionBB, this.collisions);
     }
 }

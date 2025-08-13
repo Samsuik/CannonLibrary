@@ -19,8 +19,9 @@ import java.util.function.Function;
 
 public final class EntityComponents {
     public static final SimpleComponent<Entity> GRAVITY = (entity, tick) -> entity.momentum = entity.momentum.add(0.0, -0.04, 0.0);
-    public static final SimpleComponent<Entity> MOVE_ENTITY_WITH_COLLISION = new MovementComponent(0.98f, true);
-    public static final SimpleComponent<Entity> MOVE_ENTITY_WITHOUT_COLLISION = new MovementComponent(0.98f, false);
+    public static final SimpleComponent<Entity> MOVE_ENTITY_WITH_COLLISION = new MovementComponent(true);
+    public static final SimpleComponent<Entity> MOVE_ENTITY_WITHOUT_COLLISION = new MovementComponent(false);
+    public static final SimpleComponent<Entity> BLOCK_INTERACTION = new BlockInteractionComponent();
     public static final SimpleComponent<Entity> FRICTION = (entity, tick) -> {
         if (entity.onGround) {
             entity.momentum = entity.momentum.mul(0.7, -0.5, 0.7);
@@ -67,7 +68,9 @@ public final class EntityComponents {
     }
 
     public static Component<Entity> clone(final int runAt, final int amount) {
-        return new CloneComponent(amount).once().afterOrAtTick(runAt);
+        return new CloneComponent(amount)
+                .once()
+                .afterOrAtTick(runAt);
     }
 
     public static Component<Entity> sand() {
@@ -75,7 +78,8 @@ public final class EntityComponents {
     }
 
     public static Component<Entity> fallingBlock(final Block block, final int amount) {
-        return new FallingBlockComponent(block, amount);
+        return new FallingBlockComponent(block, amount)
+                .compose(set(EntityDataKeys.FALLING_BLOCK));
     }
 
     public static Component<Entity> explode() {
@@ -87,7 +91,9 @@ public final class EntityComponents {
     }
 
     public static Component<Entity> explode(final int fuse, final int amount, final int flags) {
-        return new ExplodeComponent(amount, flags).atTick(fuse);
+        return new ExplodeComponent(amount, flags)
+                .atTick(fuse)
+                .compose(set(EntityDataKeys.TNT));
     }
 
     public static Component<Entity> impact(final int runAt, final Vec3d source, final int amount) {
@@ -128,6 +134,10 @@ public final class EntityComponents {
 
     public static <T> Component<Entity> data(final DataKey<T> key, final Function<Entity, T> func) {
         return Component.user(entity -> entity.putData(key, func.apply(entity)));
+    }
+
+    public static Component<Entity> set(final DataKey<Boolean> key) {
+        return Component.user(entity -> entity.putData(key, true));
     }
 
     public static Component<Entity> entityLogger(final String name, final Object... ex) {

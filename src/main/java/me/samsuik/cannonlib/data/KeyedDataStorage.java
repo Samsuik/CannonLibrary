@@ -1,11 +1,11 @@
 package me.samsuik.cannonlib.data;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public final class KeyedDataStorage {
-    private final Map<DataKey<?>, Object> storedData = new HashMap<>();
+    private final Map<DataKey<?>, Object> storedData = new IdentityHashMap<>();
 
     public <T> T remove(final DataKey<T> key) {
         return (T) this.storedData.remove(key);

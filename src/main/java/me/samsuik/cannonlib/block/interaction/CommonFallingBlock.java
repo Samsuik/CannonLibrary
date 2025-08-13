@@ -37,7 +37,7 @@ public interface CommonFallingBlock extends Interaction {
 
     private boolean canFall(final World world, final Vec3i position) {
         final AABB testAABB = new AABB(position, position);
-        for (final Shape shape : world.getCollisions(testAABB.expandTo(position.down()))) {
+        for (final Shape shape : world.getCollisions(testAABB.expandTo(position.down()), true)) {
             if (shape.collideY(testAABB, -1.0) != -1.0) {
                 return false;
             }

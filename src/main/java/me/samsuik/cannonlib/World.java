@@ -150,8 +150,25 @@ public final class World {
         this.globalCollisions.remove(collision);
     }
 
-    public Collisions getCollisions(final AABB boundingBox) {
-        return new Collisions(this.blocks.getCollisions(boundingBox), this.globalCollisions);
+    public void clearGlobalCollisions() {
+        this.globalCollisions.clear();
+    }
+
+    public Collisions getCollisions(final AABB boundingBox, final boolean blocks) {
+        final Iterable<Shape> blocksCollisions;
+        if (blocks) {
+            blocksCollisions = this.blocks.getCollisions(boundingBox);
+        } else {
+            blocksCollisions = List.of();
+        }
+        return new Collisions(blocksCollisions, this.globalCollisions);
+    }
+
+    public void clearWorld() {
+        this.entityList.clear();
+        this.blocks.clear();
+        this.blockTicks.clear();
+        this.globalCollisions.clear();
     }
 
     public World snapshot() {

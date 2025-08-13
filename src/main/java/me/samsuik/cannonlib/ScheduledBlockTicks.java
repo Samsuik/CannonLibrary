@@ -35,6 +35,10 @@ public final class ScheduledBlockTicks {
         this.blocksToTicks.get(tick).scheduleBlockTick(scheduledBlock);
     }
 
+    public void clear() {
+        this.blocksToTicks.clear();
+    }
+
     public void copy(final ScheduledBlockTicks blockTicks) {
         for (final BlocksToTick blocksToTick : blockTicks.blocksToTicks) {
             this.blocksToTicks.add(blocksToTick.copy());

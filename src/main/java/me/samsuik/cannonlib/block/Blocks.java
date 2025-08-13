@@ -109,4 +109,12 @@ public final class Blocks {
     public static final Block MUD = Block.from("mud", Shapes.MUD, 0.0f);
     public static final Block BIG_DRIPLEAF_NONE = Block.from("big_dripleaf_none", Shapes.BIG_DRIPLEAF_NONE, 0.0f);
     public static final Block BIG_DRIPLEAF_PARTIAL = Block.from("big_dripleaf_partial", Shapes.BIG_DRIPLEAF_PARTIAL, 0.0f);
+    public static final Block COBWEB = Block.builder()
+            .name("cobweb")
+            .interaction(BlockInteractions.COBWEB)
+            .build();
+    public static final Block POWDERED_SNOW = Block.builder()
+            .name("powdered_snow")
+            .interaction(BlockInteractions.POWDERED_SNOW)
+            .build();
 }
