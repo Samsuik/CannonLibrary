@@ -5,6 +5,7 @@ import me.samsuik.cannonlib.physics.vec3.Vec3i;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public record ClipInformation(List<ClippedBlock> clips, List<StackHeight> stackHeights, WallState wallState, int stackTop) {
@@ -41,8 +42,29 @@ public record ClipInformation(List<ClippedBlock> clips, List<StackHeight> stackH
         }
 
         builder.append("Details:\n");
+        for (final String detail : this.listAllDetails(guiderPos)) {
+            builder.append("-> %s\n".formatted(detail));
+        }
+
+        return builder.toString();
+    }
+
+    private List<String> listAllDetails(final Vec3i guiderPos) {
+        final List<String> details = new ArrayList<>();
 
         final int stackedFromBarrel = this.stackTop - (guiderPos.y() - 1);
+        final Severity severity = this.severity(guiderPos);
+        final boolean clipped = this.severity(guiderPos) == Severity.SEVERE;
+        if (clipped) {
+            details.add("Clipped");
+        } else if (wallState.pushedWater() || stackedFromBarrel >= 0) {
+            if (severity != Severity.MODERATE) {
+                details.add("Unclippable");
+            } else if (wallState.pushedWater()) {
+                details.add("Breaks clips");
+            }
+        }
+
         final String stackInfo;
         if (stackedFromBarrel > 0) {
             stackInfo = "Overstacked: " + stackedFromBarrel + "x";
@@ -54,16 +76,16 @@ public record ClipInformation(List<ClippedBlock> clips, List<StackHeight> stackH
             stackInfo = "Understacked: " + (-stackedFromBarrel) + "x";
         }
 
-        builder.append(stackInfo).append("\n");
+        details.add(stackInfo);
 
         if (wallState.pushedWater()) {
-            builder.append("OSRB\n");
+            details.add("OSRB");
         }
 
         if (wallState.isWaterBelowGuider()) {
-            builder.append("Pushed water at or below barrel height");
+            details.add("Pushed water at or below barrel height");
         }
 
-        return builder.toString();
+        return details;
     }
 }
