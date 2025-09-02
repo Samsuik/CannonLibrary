@@ -25,7 +25,6 @@ public final class ClippingBlocks {
 //            Blocks.CHAINS,
 //            Blocks.RODS,
             Blocks.COBBLESTONE,
-            Blocks.OBSIDIAN.durability(1).name("obsidian 1x"),
             Blocks.OBSIDIAN.durability(2).name("obsidian 2x"),
             Blocks.OBSIDIAN.durability(3).name("obsidian 3x"),
             Blocks.OBSIDIAN.durability(4).name("obsidian 4x"),

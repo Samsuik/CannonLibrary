@@ -48,14 +48,19 @@ public record ClippedBlock(
             problems.put("unable to destroy wall", Severity.SEVERE);
         }
 
+        final boolean stackedUpToClip = stackTop == this.position.y() - 1;
         if (this.wallState.pushedWater()) {
             if ((state & WallState.PUSHED_WATER) == 0) {
-                problems.put("unable to push water", Severity.SEVERE);
+                problems.put("unable to push water", stackedUpToClip ? Severity.MODERATE : Severity.SEVERE);
             }
 
             if (!this.wallState.isWaterBelowGuider() && (state & WallState.PUSHED_WATER_BELOW_GUIDER) != 0) {
                 problems.put("pushed water below guider", Severity.SEVERE);
             }
+        }
+
+        if (stackedUpToClip) {
+            problems.put("stacked up to clip", Severity.NONE);
         }
 
         if (stackTop < this.position.y() - 1 && stackTop != originalStackTop && originalStackTop != Integer.MIN_VALUE) {
