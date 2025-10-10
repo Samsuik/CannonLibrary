@@ -178,6 +178,7 @@ public final class CannonRatio {
                 components.add(EntityComponents.explode(gameTicks, this.amount, explosionFlags));
             }
 
+            components.add(EntityComponents.removeAtTick(160)); // uh oh.
             return EntityHelpers.create(entity -> entity.position = this.position, components);
         }
     }

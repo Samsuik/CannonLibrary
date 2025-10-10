@@ -50,7 +50,7 @@ public final class ClippingBlocks {
         }
 
         final List<StackHeight> stackHeights = StackHeight.getStackHeights(entities);
-        final Vec3i stackPos = stackHeights.getFirst().position();
+        final Vec3i stackPos = stackHeights.isEmpty() ? Vec3i.zero() : stackHeights.getFirst().position();
         final int stackTop = stackHeights.stream()
                 .mapToInt(StackHeight::top)
                 .max()

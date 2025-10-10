@@ -34,7 +34,6 @@ public record ClippedBlock(
 
     public Map<String, Severity> problems(final Vec3i guiderPos, final int originalStackTop) {
         final Map<String, Severity> problems = new LinkedHashMap<>();
-
         final int stackTop = this.stackHeights.stream()
                 .mapToInt(StackHeight::top)
                 .max()
