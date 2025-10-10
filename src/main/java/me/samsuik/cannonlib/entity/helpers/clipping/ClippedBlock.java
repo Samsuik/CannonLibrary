@@ -9,6 +9,7 @@ import java.util.*;
 public record ClippedBlock(
         Vec3i position,
         Block block,
+        WateredState wateredState,
         List<StackHeight> stackHeights,
         WallState wallState,
         int state,
@@ -38,6 +39,8 @@ public record ClippedBlock(
                 .mapToInt(StackHeight::top)
                 .max()
                 .orElse(Integer.MIN_VALUE);
+
+        problems.put(this.wateredState.getFriendlyName(), Severity.NONE);
 
         if (stackTop < guiderPos.y() - 12) {
             problems.put("clipped", Severity.SEVERE);

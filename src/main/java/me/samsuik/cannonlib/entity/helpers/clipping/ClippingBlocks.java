@@ -108,6 +108,15 @@ public final class ClippingBlocks {
         for (int count = 0; count < attempts; ++count) {
             final World snapshot = world.snapshot();
             final List<Entity> entities = new ArrayList<>(snapshot.getEntityList());
+            final WateredState wateredState = wallState.pushedWater()
+                    ? WateredState.values()[count % 3] : WateredState.DRY;
+
+            if (wallState.pushedWater() && wateredState != WateredState.WATERED) {
+                final int toDrain = wateredState == WateredState.DRY ? 8 : 1;
+                for (int offset = toDrain; offset > 0; offset--) {
+                    snapshot.removeBlock(position.sub(0, offset, 0));
+                }
+            }
 
             // when checking consistency we want to weight the explosion strength
             if (count >= 6) {
@@ -135,7 +144,7 @@ public final class ClippingBlocks {
 
             final int state = wallState.getState(snapshot, false);
             if (wallState.problem(state) || !stackedUpToClip && !stackHeights.equals(newStackHeights)) {
-                return Optional.of(new ClippedBlock(position, block, newStackHeights, wallState, state, count > 0));
+                return Optional.of(new ClippedBlock(position, block, wateredState, newStackHeights, wallState, state, count > 0));
             }
         }
 
