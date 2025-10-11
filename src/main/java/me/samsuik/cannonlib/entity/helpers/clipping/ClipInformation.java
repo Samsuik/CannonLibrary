@@ -29,6 +29,11 @@ public record ClipInformation(List<ClippedBlock> clips, List<StackHeight> stackH
             }
         }
 
+        builder.append("Details:\n");
+        for (final String detail : this.listAllDetails(guiderPos)) {
+            builder.append("-> %s\n".formatted(detail));
+        }
+
         if (!this.clips.isEmpty()) {
             final long severeClips = this.clips.stream()
                     .map(clippedBlock -> clippedBlock.severity(guiderPos, this.stackTop))
@@ -39,11 +44,6 @@ public record ClipInformation(List<ClippedBlock> clips, List<StackHeight> stackH
             for (final ClippedBlock clippedBlock : this.clips) {
                 builder.append("-> %s\n".formatted(clippedBlock.information(guiderPos, this.stackTop)));
             }
-        }
-
-        builder.append("Details:\n");
-        for (final String detail : this.listAllDetails(guiderPos)) {
-            builder.append("-> %s\n".formatted(detail));
         }
 
         return builder.toString();

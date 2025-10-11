@@ -57,14 +57,11 @@ public final class ClippingBlocks {
                 .orElse(Integer.MIN_VALUE);
 
         final int highestClipY = Math.max(stackTop + 16, guiderPos.y());
-        final WallState wallState = findWallBlocks(world, snapshot, stackPos, highestClipY, guiderPos.y());
         final List<ClippedBlock> clippedBlocks = new ArrayList<>();
-        final Set<WateredState> wateredStates = wallState.pushedWater()
-                ? EnumSet.allOf(WateredState.class)
-                : EnumSet.of(WateredState.DRY);
+        final WallState wallState = findWallBlocks(world, snapshot, stackPos, highestClipY, guiderPos.y());
 
         for (final Block block : blocks) {
-            for (final WateredState wateredState : wateredStates) {
+            for (final WateredState wateredState : WateredState.values()) {
                 for (int blockY = guiderPos.y(); blockY <= highestClipY; ++blockY) {
                     final World modifiedWorld = world.snapshot();
                     final Vec3i clipPosition = stackPos.setY(blockY);
