@@ -12,6 +12,7 @@ public record ClippedBlock(
         WateredState wateredState,
         List<StackHeight> stackHeights,
         WallState wallState,
+        boolean brokeClip,
         int state,
         boolean inconsistent
 ) {
@@ -40,20 +41,22 @@ public record ClippedBlock(
                 .max()
                 .orElse(Integer.MIN_VALUE);
 
+        final boolean stackedUpToClip = stackTop == this.position.y() - 1;
+        final Severity clipSeverity = this.brokeClip || stackedUpToClip ? Severity.MODERATE : Severity.SEVERE;
+
         problems.put(this.wateredState.getFriendlyName(), Severity.NONE);
 
-        if (stackTop < guiderPos.y() - 12) {
-            problems.put("clipped", Severity.SEVERE);
+        if (stackTop < guiderPos.y() - 12 && !this.brokeClip) {
+            problems.put("clipped", clipSeverity);
         }
 
         if (this.wallState.destroyedWall() && (state & WallState.DESTROYED_WALL) == 0) {
             problems.put("unable to destroy wall", Severity.SEVERE);
         }
 
-        final boolean stackedUpToClip = stackTop == this.position.y() - 1;
-        if (this.wallState.pushedWater()) {
+        if (this.wallState.pushedWater() && this.wateredState != WateredState.DRY) {
             if ((state & WallState.PUSHED_WATER) == 0) {
-                problems.put("unable to push water", stackedUpToClip ? Severity.MODERATE : Severity.SEVERE);
+                problems.put("unable to push water", clipSeverity);
             }
 
             if (!this.wallState.isWaterBelowGuider() && (state & WallState.PUSHED_WATER_BELOW_GUIDER) != 0) {

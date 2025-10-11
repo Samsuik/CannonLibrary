@@ -42,7 +42,7 @@ public final class OSRBClippingExample {
                 )
         );
 
-        for (int y = 300; y < 340; ++y) {
+        for (int y = GUIDER.y() - 20; y < GUIDER.y() + 20; ++y) {
             world.setBlock(new Vec3i(60, y, 0), Blocks.COBBLESTONE, false);
             world.setBlock(new Vec3i(59, y, 0), Blocks.WATER, false);
             world.setBlock(new Vec3i(59, y, 1), Blocks.WATER, false);

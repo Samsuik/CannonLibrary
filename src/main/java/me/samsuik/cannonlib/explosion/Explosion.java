@@ -14,13 +14,18 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class Explosion {
     private static final double EXPLOSION_POSITION_OFFSET = 0.98f * 0.0625;
     private static boolean moreVariation = false;
+    private static boolean consistent = true;
 
-    public static void setMoreVariation(boolean moreVariation) {
+    public static void setMoreVariation(final boolean moreVariation) {
         Explosion.moreVariation = moreVariation;
     }
 
+    public static void setConsistent(final boolean consistent) {
+        Explosion.consistent = consistent;
+    }
+
     private static float getVariation(final int flags) {
-        if ((flags & ExplosionFlags.CONSISTENT_RADIUS) != 0) {
+        if (consistent || (flags & ExplosionFlags.CONSISTENT_RADIUS) != 0) {
             return 0.7f;
         }
 

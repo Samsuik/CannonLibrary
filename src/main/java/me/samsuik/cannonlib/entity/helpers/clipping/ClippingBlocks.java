@@ -25,10 +25,10 @@ public final class ClippingBlocks {
 //            Blocks.CHAINS,
 //            Blocks.RODS,
             Blocks.COBBLESTONE,
-            Blocks.OBSIDIAN.durability(2).name("obsidian 2x"),
-            Blocks.OBSIDIAN.durability(3).name("obsidian 3x"),
-            Blocks.OBSIDIAN.durability(4).name("obsidian 4x"),
-            Blocks.OBSIDIAN.durability(5).name("obsidian 5x")
+            Blocks.OBSIDIAN.durability(2).strength(Blocks.COBBLESTONE.strength()).name("obsidian 2x"),
+            Blocks.OBSIDIAN.durability(3).strength(Blocks.COBBLESTONE.strength()).name("obsidian 3x"),
+            Blocks.OBSIDIAN.durability(4).strength(Blocks.COBBLESTONE.strength()).name("obsidian 4x"),
+            Blocks.OBSIDIAN.durability(5).strength(Blocks.COBBLESTONE.strength()).name("obsidian 5x")
     );
 
     public static ClipInformation getClipInformation(final World world, final Vec3i guiderPos, final boolean checkConsistency) {
@@ -59,14 +59,29 @@ public final class ClippingBlocks {
         final int highestClipY = Math.max(stackTop + 16, guiderPos.y());
         final WallState wallState = findWallBlocks(world, snapshot, stackPos, highestClipY, guiderPos.y());
         final List<ClippedBlock> clippedBlocks = new ArrayList<>();
+        final Set<WateredState> wateredStates = wallState.pushedWater()
+                ? EnumSet.allOf(WateredState.class)
+                : EnumSet.of(WateredState.DRY);
 
         for (final Block block : blocks) {
-            for (int blockY = guiderPos.y(); blockY <= highestClipY; ++blockY) {
-                final Vec3i position = stackPos.setY(blockY);
-                final Optional<ClippedBlock> clip = clipWithBlock(
-                        world, position, block, wallState, stackHeights, checkConsistency
-                );
-                clip.ifPresent(clippedBlocks::add);
+            for (final WateredState wateredState : wateredStates) {
+                for (int blockY = guiderPos.y(); blockY <= highestClipY; ++blockY) {
+                    final World modifiedWorld = world.snapshot();
+                    final Vec3i clipPosition = stackPos.setY(blockY);
+
+                    // Drain the water if needed
+                    if (wateredState != WateredState.WATERED) {
+                        final int toDrain = wateredState == WateredState.DRY ? (blockY - guiderPos.y()) + 4 : 1;
+                        for (int offset = toDrain; offset > 0; offset--) {
+                            modifiedWorld.removeBlock(clipPosition.sub(0, offset, 0));
+                        }
+                    }
+
+                    final Optional<ClippedBlock> clip = clipWithBlock(
+                            modifiedWorld, clipPosition, block, wateredState, wallState, stackHeights, checkConsistency
+                    );
+                    clip.ifPresent(clippedBlocks::add);
+                }
             }
         }
 
@@ -100,6 +115,7 @@ public final class ClippingBlocks {
             final World world,
             final Vec3i position,
             final Block block,
+            final WateredState wateredState,
             final WallState wallState,
             final List<StackHeight> stackHeights,
             final boolean checkConsistency
@@ -108,28 +124,14 @@ public final class ClippingBlocks {
         for (int count = 0; count < attempts; ++count) {
             final World snapshot = world.snapshot();
             final List<Entity> entities = new ArrayList<>(snapshot.getEntityList());
-            final WateredState wateredState = wallState.pushedWater()
-                    ? WateredState.values()[count % 3] : WateredState.DRY;
-
-            if (wallState.pushedWater() && wateredState != WateredState.WATERED) {
-                final int toDrain = wateredState == WateredState.DRY ? 8 : 1;
-                for (int offset = toDrain; offset > 0; offset--) {
-                    snapshot.removeBlock(position.sub(0, offset, 0));
-                }
-            }
 
             // when checking consistency we want to weight the explosion strength
-            if (count >= 6) {
-                Explosion.setMoreVariation(true);
-            }
+            Explosion.setConsistent(count < 3);
+            Explosion.setMoreVariation(count >= 6);
 
             // add a block above the sand stack to see if it clips
             snapshot.setBlock(position, block);
             snapshot.keepTicking();
-
-            if (count >= 6) {
-                Explosion.setMoreVariation(false);
-            }
 
             if (wallState.pushedWater()) {
                 for (int waterTicks = 0; waterTicks < 5; ++waterTicks) {
@@ -144,7 +146,8 @@ public final class ClippingBlocks {
 
             final int state = wallState.getState(snapshot, false);
             if (wallState.problem(state) || !stackedUpToClip && !stackHeights.equals(newStackHeights)) {
-                return Optional.of(new ClippedBlock(position, block, wateredState, newStackHeights, wallState, state, count > 0));
+                final boolean brokeClip = world.getBlockAtRaw(position) != block;
+                return Optional.of(new ClippedBlock(position, block, wateredState, newStackHeights, wallState, brokeClip, state, count > 0));
             }
         }
 
