@@ -14,23 +14,25 @@ import java.util.List;
 public final class OSRBClippingExample {
     private static final String RATIO = """
             // "0.7 384 osrb 1 above barrel" (https://discord.com/channels/778715854513635359/1404593768493219871)
-            0 sand power
-            5 1rev
-            10 sand (384)
-            3 hammer power
-            4 one shot sand
-            6 hammer (320)
-            7 os sand (5)
-            8 splitter tnt (4)
-            9 os hammer (15)
+            Sand Power      Amount: -    Tick: 0.0
+              sand          Amount: 381  Tick: 8.3
+              rev           Amount: 10   Tick: 7.1
+            
+            Hammer Power    Amount: -    Tick: 4.0
+              hammer        Amount: 561  Tick: 8.1
+              hybrid sand 1 Amount: 2    Tick: 6.3
+              hybrid sand 2 Amount: 1    Tick: 7.3
+              osrb sand     Amount: 9    Tick: 8.3
+              osrb hammer   Amount: 31   Tick: 9.1
+              scatter       Amount: 6    Tick: 15
             """;
-    private static final Vec3i GUIDER = new Vec3i(0, 185, 0);
+    private static final Vec3i GUIDER = new Vec3i(0, 310, 0);
 
     public static void main(String[] args) {
         // Create a new world using the cannon ratio preset
         final World world = CannonRatio.createWorldWithRatio(
                 RATIO,
-                false,
+                true,
                 GUIDER.y(),
                 List.of(
                         EntityComponents.LOGGER
