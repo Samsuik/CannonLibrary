@@ -2,6 +2,7 @@ package me.samsuik.cannonlib.entity.helpers.clipping;
 
 import me.samsuik.cannonlib.block.Block;
 import me.samsuik.cannonlib.block.Blocks;
+import me.samsuik.cannonlib.block.interaction.FluidInteraction;
 import me.samsuik.cannonlib.entity.Entity;
 import me.samsuik.cannonlib.entity.helpers.StackHeight;
 import me.samsuik.cannonlib.explosion.Explosion;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 public final class ClippingBlocks {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClippingBlocks.class);
@@ -59,15 +61,22 @@ public final class ClippingBlocks {
         final int highestClipY = Math.max(stackTop + 16, guiderPos.y());
         final List<ClippedBlock> clippedBlocks = new ArrayList<>();
         final WallState wallState = findWallBlocks(world, snapshot, stackPos, highestClipY, guiderPos.y());
+        final boolean wateredWall = IntStream.range(guiderPos.y() - 5, guiderPos.y() + 5)
+                .mapToObj(blockY -> world.getBlockAt(stackPos.setY(blockY)))
+                .anyMatch(block -> block.interaction() instanceof FluidInteraction);
+
+        final WateredState[] waterStatesToCheck = wateredWall
+                ? WateredState.values()
+                : new WateredState[] {WateredState.DRY};
 
         for (final Block block : blocks) {
-            for (final WateredState wateredState : WateredState.values()) {
+            for (final WateredState wateredState : waterStatesToCheck) {
                 for (int blockY = guiderPos.y(); blockY <= highestClipY; ++blockY) {
                     final World modifiedWorld = world.snapshot();
                     final Vec3i clipPosition = stackPos.setY(blockY);
 
                     // Drain the water if needed
-                    if (wateredState != WateredState.WATERED) {
+                    if (!wateredWall && wateredState != WateredState.WATERED) {
                         final int toDrain = wateredState == WateredState.DRY ? (blockY - guiderPos.y()) + 4 : 1;
                         for (int offset = toDrain; offset > 0; offset--) {
                             modifiedWorld.removeBlock(clipPosition.sub(0, offset, 0));
@@ -83,7 +92,7 @@ public final class ClippingBlocks {
         }
 
         clippedBlocks.removeIf(clippedBlock -> clippedBlock.severity(guiderPos, stackTop) == Severity.NONE);
-        return new ClipInformation(clippedBlocks, stackHeights, wallState, stackTop);
+        return new ClipInformation(clippedBlocks, stackHeights, wallState, stackTop, wateredWall);
     }
 
     private static WallState findWallBlocks(

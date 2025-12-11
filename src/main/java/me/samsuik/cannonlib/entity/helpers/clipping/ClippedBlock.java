@@ -59,7 +59,7 @@ public record ClippedBlock(
                 problems.put("unable to push water", clipSeverity);
             }
 
-            if (!this.wallState.isWaterBelowGuider() && (state & WallState.PUSHED_WATER_BELOW_GUIDER) != 0) {
+            if (!this.wallState.hasPushedWaterBelowGuider() && (state & WallState.PUSHED_WATER_BELOW_GUIDER) != 0) {
                 problems.put("pushed water below guider", Severity.SEVERE);
             }
         }

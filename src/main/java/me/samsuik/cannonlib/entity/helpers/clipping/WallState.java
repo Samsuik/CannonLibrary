@@ -14,20 +14,20 @@ public final class WallState {
     public static final int PUSHED_WATER_BELOW_GUIDER = 0b100;
 
     private final Map<Vec3i, Block> wallBlocks = new HashMap<>();
-    private int wallState = 0;
-    private int waterHeight = Integer.MIN_VALUE;
-    private boolean waterBelowGuider = false;
+    private int originalWallState = 0;
+    private int pushedWaterHeight = Integer.MIN_VALUE;
+    private boolean pushedWaterBelowGuider = false;
 
     public boolean destroyedWall() {
-        return (this.wallState & DESTROYED_WALL) != 0;
+        return (this.originalWallState & DESTROYED_WALL) != 0;
     }
 
     public boolean pushedWater() {
-        return (this.wallState & PUSHED_WATER) != 0 || (this.wallState & PUSHED_WATER_BELOW_GUIDER) != 0;
+        return (this.originalWallState & PUSHED_WATER) != 0 || (this.originalWallState & PUSHED_WATER_BELOW_GUIDER) != 0;
     }
 
-    public boolean isWaterBelowGuider() {
-        return this.waterBelowGuider;
+    public boolean hasPushedWaterBelowGuider() {
+        return this.pushedWaterBelowGuider;
     }
 
     public void addBlock(final Vec3i pos, final Block presentBlock) {
@@ -51,17 +51,17 @@ public final class WallState {
     public void updateState(final World world, final int guiderY) {
         for (final Map.Entry<Vec3i, Block> entry : this.wallBlocks.entrySet()) {
             final int blockY = entry.getKey().y();
-            if (this.waterHeight < blockY && entry.getValue().has(BlockInteractions.WATER)) {
-                this.waterHeight = blockY;
+            if (this.pushedWaterHeight < blockY && entry.getValue().has(BlockInteractions.WATER)) {
+                this.pushedWaterHeight = blockY;
             }
         }
 
-        if (this.waterHeight != Integer.MIN_VALUE && this.waterHeight > guiderY) {
-            this.waterHeight = guiderY;
-            this.waterBelowGuider = true;
+        if (this.pushedWaterHeight != Integer.MIN_VALUE && this.pushedWaterHeight > guiderY) {
+            this.pushedWaterHeight = guiderY;
+            this.pushedWaterBelowGuider = true;
         }
 
-        this.wallState = this.getState(world, true);
+        this.originalWallState = this.getState(world, true);
     }
 
     public int getState(final World world, final boolean force) {
@@ -74,9 +74,9 @@ public final class WallState {
                 state |= DESTROYED_WALL;
             }
 
-            if (block.has(BlockInteractions.WATER) && (force || (this.wallState & PUSHED_WATER) != 0)) {
+            if (block.has(BlockInteractions.WATER) && (force || (this.originalWallState & PUSHED_WATER) != 0)) {
                 if ((state & PUSHED_WATER) == 0) {
-                    if (position.y() < this.waterHeight) {
+                    if (position.y() < this.pushedWaterHeight) {
                         state |= PUSHED_WATER_BELOW_GUIDER;
                     } else {
                         state |= PUSHED_WATER;
@@ -85,7 +85,7 @@ public final class WallState {
                 }
             }
 
-            if (state == this.wallState && !force) {
+            if (state == this.originalWallState && !force) {
                 break; // no need to check further
             }
         }

@@ -8,7 +8,13 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public record ClipInformation(List<ClippedBlock> clips, List<StackHeight> stackHeights, WallState wallState, int stackTop) {
+public record ClipInformation(
+        List<ClippedBlock> clips,
+        List<StackHeight> stackHeights,
+        WallState wallState,
+        int stackTop,
+        boolean wateredWall
+) {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClipInformation.class);
 
     public Severity severity(final Vec3i guiderPos) {
@@ -82,8 +88,12 @@ public record ClipInformation(List<ClippedBlock> clips, List<StackHeight> stackH
             details.add("OSRB");
         }
 
-        if (wallState.isWaterBelowGuider()) {
+        if (wallState.hasPushedWaterBelowGuider()) {
             details.add("Pushed water at or below barrel height");
+        }
+
+        if (!wateredWall) {
+            details.add("Dry Wall");
         }
 
         return details;
