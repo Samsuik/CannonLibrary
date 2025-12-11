@@ -136,7 +136,7 @@ public final class World {
         for (final Rotation rotation : Rotation.values()) {
             this.addGlobalCollision(Shapes.plane(
                     xyz.mul(rotation.getDirection()).x(),
-                    xyz.mul(rotation.getDirection()).y(),
+                    0.0,
                     xyz.mul(rotation.getDirection()).z()
             ));
         }
