@@ -81,7 +81,7 @@ public final class BlocksAndShapes {
         private Iterator<Shape> collisions = null;
 
         public BlockCollisionIterator(final AABB boundingBox) {
-            final Vec3i maxSection = sectionPosition(boundingBox.maximum());
+            final Vec3i maxSection = sectionPosition(boundingBox.maximum()).add(1, 1, 1);
             this.minSection = sectionPosition(boundingBox.minimum());
             this.sectionCount = maxSection.sub(this.minSection).add(1, 1, 1);
             this.endIndex = (int) this.sectionCount.volume();
